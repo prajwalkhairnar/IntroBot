@@ -1,4 +1,4 @@
--- Supabase Database Migration for Aura Chat
+-- Supabase Database Migration for IntroBot
 -- Run this SQL in your Supabase SQL Editor
 
 -- Enable UUID extension

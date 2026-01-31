@@ -3,7 +3,7 @@
  * Handles anonymous user identification using localStorage
  */
 
-const USER_ID_KEY = 'aura_chat_user_id';
+const USER_ID_KEY = 'introbot_user_id';
 
 /**
  * Generate a unique user ID

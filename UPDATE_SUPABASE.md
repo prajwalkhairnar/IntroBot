@@ -11,7 +11,7 @@ Run the updated SQL migration to replace the RLS policies with ones that work fo
 ### 1. Open Supabase Dashboard
 1. Go to [https://supabase.com/dashboard](https://supabase.com/dashboard)
 2. Sign in to your account
-3. Select your **aura-chat** project
+3. Select your **IntroBot** project
 
 ### 2. Open SQL Editor
 1. Click on **SQL Editor** in the left sidebar

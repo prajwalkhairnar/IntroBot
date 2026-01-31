@@ -68,7 +68,7 @@
 ### Option 1: Monorepo (Single Repo) ⭐ **RECOMMENDED**
 
 ```
-aura-chat/
+introbot/
 ├── frontend/                    # Your existing React app
 │   ├── src/
 │   │   ├── components/

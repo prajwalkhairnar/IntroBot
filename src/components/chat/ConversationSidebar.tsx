@@ -69,7 +69,7 @@ export function ConversationSidebar({
             onClick={onNewChat}
             className="font-semibold text-lg text-sidebar-foreground group-data-[collapsible=icon]:hidden hover:opacity-80 transition-opacity cursor-pointer"
           >
-            Aura
+            IntroBot
           </button>
           <SidebarTrigger className="ml-auto hover:bg-muted hover:text-sidebar-foreground" />
         </div>

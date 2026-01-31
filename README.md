@@ -1,8 +1,8 @@
-# 🌟 Aura Chat
+# 🌟 IntroBot
 
 A modern, AI-powered chat application with a stunning animated interface, persistent conversations, and real-time synchronization. Built with React, TypeScript, and powered by cutting-edge AI technology.
 
-![Aura Chat](https://img.shields.io/badge/status-active-success.svg)
+![IntroBot](https://img.shields.io/badge/status-active-success.svg)
 ![TypeScript](https://img.shields.io/badge/TypeScript-5.8-blue.svg)
 ![React](https://img.shields.io/badge/React-18.3-61dafb.svg)
 ![License](https://img.shields.io/badge/license-MIT-blue.svg)
@@ -37,7 +37,7 @@ A modern, AI-powered chat application with a stunning animated interface, persis
 
 ## 🏗️ Architecture
 
-Aura Chat uses a **hybrid architecture** that combines the best of both worlds:
+IntroBot uses a **hybrid architecture** that combines the best of both worlds:
 
 ```
 ┌─────────────────────────────────────────────────────┐
@@ -96,8 +96,8 @@ Aura Chat uses a **hybrid architecture** that combines the best of both worlds:
 
 1. **Clone the repository**
    ```bash
-   git clone https://github.com/prajwalkhairnar/aura-chat.git
-   cd aura-chat
+   git clone https://github.com/prajwalkhairnar/IntroBot.git
+   cd IntroBot
    ```
 
 2. **Install frontend dependencies**
@@ -162,7 +162,7 @@ For detailed setup instructions, see [SETUP.md](./SETUP.md).
 
 ### Creating a New Conversation
 1. Click the **"New Chat"** button in the sidebar
-2. You'll see the welcome screen with the animated Aura logo
+2. You'll see the welcome screen with the animated IntroBot logo
 3. Type your message and press Enter
 4. The AI will respond, and your conversation is automatically saved
 
@@ -170,7 +170,7 @@ For detailed setup instructions, see [SETUP.md](./SETUP.md).
 - **View History**: All conversations appear in the left sidebar
 - **Switch Conversations**: Click any conversation to view its full history
 - **Delete Conversations**: Hover over a conversation and click the delete icon
-- **Collapse Sidebar**: Click the Aura logo to toggle the sidebar
+- **Collapse Sidebar**: Click the IntroBot logo to toggle the sidebar
 
 ### Keyboard Shortcuts
 - `Enter` - Send message
@@ -179,7 +179,7 @@ For detailed setup instructions, see [SETUP.md](./SETUP.md).
 ## 🏗️ Project Structure
 
 ```
-aura-chat/
+introbot/
 ├── src/                       # Frontend source code
 │   ├── components/
 │   │   ├── chat/              # Chat-related components

@@ -1,4 +1,4 @@
-# Aura Chat - Supabase Setup Guide
+# IntroBot - Supabase Setup Guide
 
 ## 🚀 Quick Start
 
@@ -9,7 +9,7 @@ Follow these steps to set up Supabase and get your chat application running with
 1. Go to [supabase.com](https://supabase.com) and sign up/login
 2. Click **"New Project"**
 3. Fill in project details:
-   - **Name**: `aura-chat` (or your preferred name)
+   - **Name**: `introbot` (or your preferred name)
    - **Database Password**: Create a strong password (save this!)
    - **Region**: Choose the region closest to you
 4. Click **"Create new project"** and wait ~2 minutes for setup

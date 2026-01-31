@@ -4,7 +4,7 @@ import { Send, Paperclip, Moon, Sun } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { cn } from '@/lib/utils';
-import { getRandomGreeting } from '@/config/greetings';
+import { getIntroduction } from '@/config/greetings';
 import { useTheme } from '@/hooks/useTheme';
 
 interface WelcomeScreenProps {
@@ -15,7 +15,7 @@ interface WelcomeScreenProps {
 
 export function WelcomeScreen({ onExampleClick, onSend, loading }: WelcomeScreenProps) {
   const [message, setMessage] = useState('');
-  const [greeting] = useState(() => getRandomGreeting());
+  const intro = getIntroduction();
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const { theme, toggleTheme } = useTheme();
 
@@ -67,10 +67,15 @@ export function WelcomeScreen({ onExampleClick, onSend, loading }: WelcomeScreen
           <AnimatedLogo />
         </div>
 
-        {/* Simple Greeting */}
-        <h2 className="text-2xl font-medium text-foreground">
-          {greeting}
-        </h2>
+        {/* Introduction */}
+        <div className="space-y-1">
+          <h2 className="text-2xl font-medium text-foreground">
+            {intro.name}
+          </h2>
+          <p className="text-lg text-muted-foreground">
+            {intro.title}
+          </p>
+        </div>
 
         {/* Message Input - integrated into welcome screen without border-top */}
         <div className="pt-4">

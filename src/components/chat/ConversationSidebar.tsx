@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Plus, Trash2, MoreHorizontal, Star, Settings } from 'lucide-react';
+import { Plus, Trash2, MoreHorizontal, Star, Settings, Shield } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import {
   Sidebar,
@@ -26,6 +26,7 @@ import {
 import { Conversation } from '@/types/chat';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { FeedbackDialog } from '@/components/feedback/FeedbackDialog';
+import { useAdmin } from '@/contexts/AdminContext';
 
 
 interface ConversationSidebarProps {
@@ -49,6 +50,7 @@ export function ConversationSidebar({
   const isCollapsed = state === 'collapsed';
   const [feedbackOpen, setFeedbackOpen] = useState(false);
   const navigate = useNavigate();
+  const { isAuthenticated } = useAdmin();
 
   const formatDate = (dateString: string) => {
     const date = new Date(dateString);
@@ -208,6 +210,29 @@ export function ConversationSidebar({
       </SidebarContent>
 
       <SidebarFooter>
+        {isAuthenticated && (
+          <div className="px-2 py-1">
+            {isCollapsed ? (
+              <TooltipProvider>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <div className="flex justify-center w-full">
+                      <Shield className="h-4 w-4 text-primary" />
+                    </div>
+                  </TooltipTrigger>
+                  <TooltipContent side="right">
+                    <p>Admin Active</p>
+                  </TooltipContent>
+                </Tooltip>
+              </TooltipProvider>
+            ) : (
+              <div className="flex items-center gap-2 px-2 py-1.5 text-xs font-medium text-primary bg-primary/10 rounded-md">
+                <Shield className="h-3 w-3" />
+                <span>Admin Active</span>
+              </div>
+            )}
+          </div>
+        )}
         {/* Admin/Settings Button */}
         <div className="px-2 py-3">
           {isCollapsed ? (

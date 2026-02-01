@@ -6,16 +6,16 @@ import { Label } from '@/components/ui/label';
 import { AnalyticsDashboard } from '@/components/admin/AnalyticsDashboard';
 import { supabase } from '@/lib/supabase';
 import { toast } from 'sonner';
-import { Lock, ArrowLeft, Loader2, Rocket } from 'lucide-react';
+import { Lock, ArrowLeft, Loader2, Shield } from 'lucide-react';
+import { useAdmin } from '@/contexts/AdminContext';
 
 export default function Settings() {
     const navigate = useNavigate();
-    const [isAuthenticated, setIsAuthenticated] = useState(false);
+    const { isAuthenticated, serviceName, login } = useAdmin();
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
-    const [serviceName, setServiceName] = useState('');
 
     const handleLogin = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -37,8 +37,7 @@ export default function Settings() {
                 throw new Error('Invalid credentials');
             }
 
-            setIsAuthenticated(true);
-            setServiceName(data.service);
+            login(data.service);
             toast.success('Welcome to Mission Control');
         } catch (err: any) {
             console.error('Auth error:', err);
@@ -65,7 +64,7 @@ export default function Settings() {
                     {isAuthenticated && (
                         <div className="flex flex-col items-end">
                             <div className="flex items-center gap-2 text-primary">
-                                <Rocket className="h-5 w-5" />
+                                <Shield className="h-5 w-5" />
                                 <h1 className="text-xl font-bold">Mission Control</h1>
                             </div>
                             <p className="text-sm text-muted-foreground">Logged in as {serviceName}</p>

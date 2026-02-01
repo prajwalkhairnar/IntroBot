@@ -3,10 +3,10 @@ import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { AdminCredentialsWall } from '@/components/admin/AdminCredentialsWall';
+import { AnalyticsDashboard } from '@/components/admin/AnalyticsDashboard';
 import { supabase } from '@/lib/supabase';
 import { toast } from 'sonner';
-import { Lock, ArrowLeft, Loader2, Shield } from 'lucide-react';
+import { Lock, ArrowLeft, Loader2, Rocket } from 'lucide-react';
 
 export default function Settings() {
     const navigate = useNavigate();
@@ -15,6 +15,7 @@ export default function Settings() {
     const [password, setPassword] = useState('');
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
+    const [serviceName, setServiceName] = useState('');
 
     const handleLogin = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -37,7 +38,8 @@ export default function Settings() {
             }
 
             setIsAuthenticated(true);
-            toast.success('Access granted');
+            setServiceName(data.service);
+            toast.success('Welcome to Mission Control');
         } catch (err: any) {
             console.error('Auth error:', err);
             setError('Invalid credentials');
@@ -48,7 +50,7 @@ export default function Settings() {
 
     return (
         <div className="min-h-screen bg-background p-4 md:p-8">
-            <div className={`mx-auto transition-all duration-300 ${isAuthenticated ? 'max-w-5xl' : 'max-w-md'}`}>
+            <div className={`mx-auto transition-all duration-300 ${isAuthenticated ? 'max-w-7xl' : 'max-w-md'}`}>
                 {/* Header */}
                 <div className="flex items-center justify-between mb-8">
                     <Button
@@ -61,9 +63,12 @@ export default function Settings() {
                     </Button>
 
                     {isAuthenticated && (
-                        <div className="flex items-center gap-2 text-primary">
-                            <Shield className="h-5 w-5" />
-                            <h1 className="text-xl font-bold">Admin Credentials</h1>
+                        <div className="flex flex-col items-end">
+                            <div className="flex items-center gap-2 text-primary">
+                                <Rocket className="h-5 w-5" />
+                                <h1 className="text-xl font-bold">Mission Control</h1>
+                            </div>
+                            <p className="text-sm text-muted-foreground">Logged in as {serviceName}</p>
                         </div>
                     )}
                 </div>
@@ -75,9 +80,9 @@ export default function Settings() {
                             <div className="inline-flex p-3 bg-muted rounded-full mb-4">
                                 <Lock className="h-6 w-6 text-muted-foreground" />
                             </div>
-                            <h2 className="text-xl font-semibold">Admin Access</h2>
+                            <h2 className="text-xl font-semibold">Mission Control Access</h2>
                             <p className="text-sm text-muted-foreground mt-1">
-                                Enter your credentials to view the wall.
+                                Enter your credentials to view analytics.
                             </p>
                         </div>
 
@@ -125,14 +130,14 @@ export default function Settings() {
                                         Verifying...
                                     </>
                                 ) : (
-                                    'Unlock Settings'
+                                    'Launch Mission Control'
                                 )}
                             </Button>
                         </form>
                     </div>
                 ) : (
                     <div className="animate-fade-in-up">
-                        <AdminCredentialsWall />
+                        <AnalyticsDashboard />
                     </div>
                 )}
             </div>

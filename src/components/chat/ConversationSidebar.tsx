@@ -1,4 +1,4 @@
-import { Plus, Trash2, MoreHorizontal } from 'lucide-react';
+import { Plus, Trash2, MoreHorizontal, Star, Settings } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import {
   Sidebar,
@@ -7,6 +7,7 @@ import {
   SidebarGroupContent,
   SidebarGroupLabel,
   SidebarHeader,
+  SidebarFooter,
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
@@ -75,7 +76,7 @@ export function ConversationSidebar({
         </div>
 
         {/* New Chat Button */}
-        <div className="px-2 pb-3 pt-2">
+        <div className="px-2 pb-2 pt-2">
           {isCollapsed ? (
             <TooltipProvider>
               <Tooltip>
@@ -103,6 +104,39 @@ export function ConversationSidebar({
             >
               <Plus className="h-4 w-4 shrink-0" />
               <span>New Chat</span>
+            </Button>
+          )}
+        </div>
+
+        {/* Feedback Button */}
+        <div className="px-2 pb-3">
+          {isCollapsed ? (
+            <TooltipProvider>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Button
+                    onClick={() => console.log('Feedback clicked')}
+                    variant="ghost"
+                    size="icon"
+                    className="w-full h-10 hover:bg-muted hover:text-sidebar-foreground"
+                  >
+                    <Star className="h-5 w-5" />
+                  </Button>
+                </TooltipTrigger>
+                <TooltipContent side="right">
+                  <p>Feedback</p>
+                </TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
+          ) : (
+            <Button
+              onClick={() => console.log('Feedback clicked')}
+              variant="ghost"
+              className="w-full justify-start gap-2 hover:bg-muted hover:text-sidebar-foreground"
+              size="sm"
+            >
+              <Star className="h-4 w-4 shrink-0" />
+              <span>Feedback</span>
             </Button>
           )}
         </div>
@@ -164,6 +198,41 @@ export function ConversationSidebar({
           </SidebarGroup>
         )}
       </SidebarContent>
+
+      <SidebarFooter>
+        {/* Admin/Settings Button */}
+        <div className="px-2 py-3">
+          {isCollapsed ? (
+            <TooltipProvider>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Button
+                    onClick={() => console.log('Settings clicked')}
+                    variant="ghost"
+                    size="icon"
+                    className="w-full h-10 hover:bg-muted hover:text-sidebar-foreground"
+                  >
+                    <Settings className="h-5 w-5" />
+                  </Button>
+                </TooltipTrigger>
+                <TooltipContent side="right">
+                  <p>Settings</p>
+                </TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
+          ) : (
+            <Button
+              onClick={() => console.log('Settings clicked')}
+              variant="ghost"
+              className="w-full justify-start gap-2 hover:bg-muted hover:text-sidebar-foreground"
+              size="sm"
+            >
+              <Settings className="h-4 w-4 shrink-0" />
+              <span>Settings</span>
+            </Button>
+          )}
+        </div>
+      </SidebarFooter>
     </Sidebar>
   );
 }

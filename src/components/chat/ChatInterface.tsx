@@ -1,4 +1,4 @@
-import { useCallback } from 'react';
+import { useCallback, useState, useEffect } from 'react';
 import { MessageList } from './MessageList';
 import { MessageInput } from './MessageInput';
 import { WelcomeScreen } from './WelcomeScreen';
@@ -25,6 +25,29 @@ export function ChatInterface({
 }: ChatInterfaceProps) {
   const { messages, loading, sendMessage } = useChat(conversationId, onConversationNamed);
   const { theme, toggleTheme } = useTheme();
+
+  // Transition state management
+  const [isTransitioning, setIsTransitioning] = useState(false);
+  const [showWelcome, setShowWelcome] = useState(true);
+
+  // Update welcome screen visibility based on messages
+  useEffect(() => {
+    if (messages.length > 0) {
+      // Start transition when first message arrives
+      if (showWelcome && !isTransitioning) {
+        setIsTransitioning(true);
+        // Wait for fade-out animation to complete before hiding welcome screen
+        setTimeout(() => {
+          setShowWelcome(false);
+          setIsTransitioning(false);
+        }, 500); // Match this with CSS transition duration
+      }
+    } else {
+      // Reset to welcome screen when no messages
+      setShowWelcome(true);
+      setIsTransitioning(false);
+    }
+  }, [messages.length, showWelcome, isTransitioning]);
 
   const handleSend = useCallback(async (content: string) => {
     let activeConvId = conversationId;
@@ -67,13 +90,12 @@ export function ChatInterface({
     document.body.removeChild(link);
   }, []);
 
-  const showWelcome = messages.length === 0 && !loading;
 
   return (
     <div className="flex flex-col h-full bg-background">
       {/* Header - only show when there are messages */}
       {!showWelcome && (
-        <header className="flex items-center gap-3 p-4 bg-background/80 backdrop-blur-sm h-16">
+        <header className="flex items-center gap-3 p-4 bg-background/80 backdrop-blur-sm h-16 animate-fade-in">
           <div className="flex-1 min-w-0">
             <h1 className="font-semibold truncate text-foreground">
               {conversationTitle || 'New Conversation'}
@@ -115,23 +137,34 @@ export function ChatInterface({
       {/* Main content */}
       <div className="flex-1 flex flex-col overflow-hidden">
         {showWelcome ? (
-          <WelcomeScreen
-            onExampleClick={handleExampleClick}
-            onSend={handleSend}
-            loading={loading}
-          />
+          <div
+            className={`flex-1 flex flex-col transition-opacity duration-500 ${isTransitioning ? 'opacity-0' : 'opacity-100'
+              }`}
+          >
+            <WelcomeScreen
+              onExampleClick={handleExampleClick}
+              onSend={handleSend}
+              loading={loading}
+            />
+          </div>
         ) : (
-          <MessageList messages={messages} loading={loading} />
+          <div
+            className="flex-1 animate-fade-in-up"
+          >
+            <MessageList messages={messages} loading={loading} />
+          </div>
         )}
       </div>
 
       {/* Input - only show when NOT on welcome screen */}
       {!showWelcome && (
-        <MessageInput
-          onSend={handleSend}
-          disabled={loading}
-          placeholder="Reply..."
-        />
+        <div className="animate-fade-in">
+          <MessageInput
+            onSend={handleSend}
+            disabled={loading}
+            placeholder="Reply..."
+          />
+        </div>
       )}
     </div>
   );

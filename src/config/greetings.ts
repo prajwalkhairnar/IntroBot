@@ -10,6 +10,15 @@ export const WORK_TITLES = [
 ] as const;
 
 /**
+ * Social media links
+ */
+export const SOCIAL_LINKS = {
+    linkedin: "https://www.linkedin.com/in/prajwal-khairnar/",
+    github: "https://github.com/prajwalkhairnar",
+    email: "prajwal.pkhairnar@gmail.com"
+} as const;
+
+/**
  * Get the introduction message with a random work title
  */
 export function getIntroduction() {

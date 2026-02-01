@@ -1,10 +1,10 @@
 import { useState, useRef, useEffect, KeyboardEvent } from 'react';
 import { AnimatedLogo } from './AnimatedLogo';
-import { Send, Paperclip, Moon, Sun, Download } from 'lucide-react';
+import { Send, Paperclip, Moon, Sun, Download, Linkedin, Github, Mail } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { cn } from '@/lib/utils';
-import { getIntroduction } from '@/config/greetings';
+import { getIntroduction, SOCIAL_LINKS } from '@/config/greetings';
 import { useTheme } from '@/hooks/useTheme';
 
 interface WelcomeScreenProps {
@@ -53,6 +53,18 @@ export function WelcomeScreen({ onExampleClick, onSend, loading }: WelcomeScreen
     document.body.removeChild(link);
   };
 
+  const handleLinkedInClick = () => {
+    window.open(SOCIAL_LINKS.linkedin, '_blank');
+  };
+
+  const handleGitHubClick = () => {
+    window.open(SOCIAL_LINKS.github, '_blank');
+  };
+
+  const handleEmailClick = () => {
+    window.location.href = `mailto:${SOCIAL_LINKS.email}`;
+  };
+
   return (
     <div className="flex-1 flex flex-col items-center justify-center px-4 py-12 relative">
       {/* Download CV and Theme toggle in top right */}
@@ -86,13 +98,44 @@ export function WelcomeScreen({ onExampleClick, onSend, loading }: WelcomeScreen
         </div>
 
         {/* Introduction */}
-        <div className="space-y-1">
+        <div className="space-y-3">
           <h2 className="text-2xl font-medium text-foreground">
             {intro.name}
           </h2>
           <p className="text-lg text-muted-foreground">
             {intro.title}
           </p>
+
+          {/* Social Media Links */}
+          <div className="flex items-center justify-center gap-3 pt-2">
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={handleLinkedInClick}
+              className="gap-2 hover:bg-[#0077B5] hover:text-white hover:border-[#0077B5] transition-colors"
+            >
+              <Linkedin className="h-4 w-4" />
+              <span>LinkedIn</span>
+            </Button>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={handleGitHubClick}
+              className="gap-2 hover:bg-[#333] hover:text-white hover:border-[#333] dark:hover:bg-white dark:hover:text-black dark:hover:border-white transition-colors"
+            >
+              <Github className="h-4 w-4" />
+              <span>GitHub</span>
+            </Button>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={handleEmailClick}
+              className="gap-2 hover:bg-[#EA4335] hover:text-white hover:border-[#EA4335] transition-colors"
+            >
+              <Mail className="h-4 w-4" />
+              <span>Email</span>
+            </Button>
+          </div>
         </div>
 
         {/* Message Input - integrated into welcome screen without border-top */}

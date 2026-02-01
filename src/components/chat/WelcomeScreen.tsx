@@ -16,7 +16,7 @@ interface WelcomeScreenProps {
 
 export function WelcomeScreen({ onExampleClick, onSend, loading }: WelcomeScreenProps) {
   const [message, setMessage] = useState('');
-  const intro = getIntroduction();
+  const [intro] = useState(() => getIntroduction());
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const { theme, toggleTheme } = useTheme();
 

@@ -1,5 +1,5 @@
-import { useEffect, useRef } from 'react';
-import { User } from 'lucide-react';
+import { useEffect, useRef, useState } from 'react';
+import { User, Copy, Check } from 'lucide-react';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { cn } from '@/lib/utils';
 import { Message } from '@/types/chat';
@@ -14,11 +14,22 @@ interface MessageListProps {
 
 function MessageBubble({ message }: { message: Message }) {
   const isUser = message.role === 'user';
+  const [copied, setCopied] = useState(false);
+
+  const handleCopy = async () => {
+    try {
+      await navigator.clipboard.writeText(message.content);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    } catch (err) {
+      console.error('Failed to copy text:', err);
+    }
+  };
 
   return (
     <div
       className={cn(
-        "flex gap-4 px-4 py-6 max-w-4xl mx-auto",
+        "group flex gap-4 px-4 py-6 max-w-4xl mx-auto",
         isUser ? "bg-transparent justify-end" : "bg-muted/30"
       )}
     >
@@ -34,12 +45,33 @@ function MessageBubble({ message }: { message: Message }) {
         "flex-1 min-w-0 space-y-2",
         isUser ? "max-w-2xl" : ""
       )}>
-        <p className={cn(
-          "text-xs font-medium text-muted-foreground uppercase tracking-wide",
-          isUser ? "text-right" : ""
-        )}>
-          {isUser ? 'You' : 'Assistant'}
-        </p>
+        <div className="flex items-center gap-2">
+          {!isUser && (
+            <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide">
+              Assistant
+            </p>
+          )}
+
+          <div className="flex-1" />
+
+          {isUser && (
+            <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide text-right">
+              You
+            </p>
+          )}
+
+          {!isUser && (
+            <button
+              onClick={handleCopy}
+              className={cn(
+                "opacity-0 group-hover:opacity-100 transition-opacity p-1.5 hover:bg-muted rounded-md text-muted-foreground hover:text-foreground",
+              )}
+              title="Copy message"
+            >
+              {copied ? <Check className="h-3.5 w-3.5" /> : <Copy className="h-3.5 w-3.5" />}
+            </button>
+          )}
+        </div>
 
         {isUser ? (
           // User messages - simple text rendering

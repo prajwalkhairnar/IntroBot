@@ -1,13 +1,15 @@
 import { useCallback, useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { MessageList } from './MessageList';
 import { MessageInput } from './MessageInput';
 import { WelcomeScreen } from './WelcomeScreen';
 import { useChat } from '@/hooks/useChat';
 import { useTheme } from '@/hooks/useTheme';
-import { Moon, Sun, Download, FileDown } from 'lucide-react';
+import { Moon, Sun, Download, FileDown, Settings } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { exportConversation } from '@/lib/exportConversation';
 import { toast } from '@/components/ui/sonner';
+
 
 interface ChatInterfaceProps {
   conversationId: string | null;
@@ -30,6 +32,7 @@ export function ChatInterface({
   // Transition state management
   const [isTransitioning, setIsTransitioning] = useState(false);
   const [showWelcome, setShowWelcome] = useState(true);
+  const navigate = useNavigate();
 
   // Update welcome screen visibility based on messages
   useEffect(() => {
@@ -133,6 +136,15 @@ export function ChatInterface({
           <Button
             variant="ghost"
             size="icon"
+            onClick={() => navigate('/settings')}
+            className="shrink-0 hover:bg-muted hover:text-foreground"
+            title="Settings"
+          >
+            <Settings className="h-5 w-5" />
+          </Button>
+          <Button
+            variant="ghost"
+            size="icon"
             onClick={toggleTheme}
             className="shrink-0 hover:bg-muted hover:text-foreground"
           >
@@ -146,7 +158,7 @@ export function ChatInterface({
       )}
 
       {/* Main content */}
-      <div className="flex-1 flex flex-col overflow-hidden">
+      <div className="flex-1 flex flex-col overflow-hidden relative">
         {showWelcome ? (
           <div
             className={`flex-1 flex flex-col transition-opacity duration-500 ${isTransitioning ? 'opacity-0' : 'opacity-100'
@@ -177,6 +189,7 @@ export function ChatInterface({
           />
         </div>
       )}
+
     </div>
   );
 }

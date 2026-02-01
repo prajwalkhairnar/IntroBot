@@ -103,6 +103,34 @@ CREATE POLICY "Allow anonymous users to submit feedback"
     FOR INSERT
     WITH CHECK (true);
 
+-- Create admin_credentials table
+CREATE TABLE IF NOT EXISTS admin_credentials (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    service TEXT NOT NULL,
+    username TEXT NOT NULL,
+    password TEXT NOT NULL,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
+-- Enable Row Level Security for admin_credentials
+ALTER TABLE admin_credentials ENABLE ROW LEVEL SECURITY;
+
+-- Drop existing policies if they exist
+DROP POLICY IF EXISTS "Allow anonymous users to view credentials" ON admin_credentials;
+
+-- Create permissive RLS policy for admin_credentials (allow select for now)
+CREATE POLICY "Allow anonymous users to view credentials"
+    ON admin_credentials
+    FOR SELECT
+    USING (true);
+
+-- Insert some dummy credentials for testing
+INSERT INTO admin_credentials (service, username, password)
+VALUES 
+    ('AWS Console', 'admin@company.com', 'A1b2C3d4!'),
+    ('Stripe Dashboard', 'finance@company.com', 'S$r1p3Key_99'),
+    ('Supabase Admin', 'dev@company.com', 'Sup3rS3cr3tDB');
+
 -- Success message
 DO $$
 BEGIN

@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Plus, Trash2, MoreHorizontal, Star, Settings } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import {
@@ -26,6 +27,7 @@ import { Conversation } from '@/types/chat';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { FeedbackDialog } from '@/components/feedback/FeedbackDialog';
 
+
 interface ConversationSidebarProps {
   conversations: Conversation[];
   activeConversationId: string | null;
@@ -46,6 +48,7 @@ export function ConversationSidebar({
   const { state } = useSidebar();
   const isCollapsed = state === 'collapsed';
   const [feedbackOpen, setFeedbackOpen] = useState(false);
+  const navigate = useNavigate();
 
   const formatDate = (dateString: string) => {
     const date = new Date(dateString);
@@ -212,7 +215,7 @@ export function ConversationSidebar({
               <Tooltip>
                 <TooltipTrigger asChild>
                   <Button
-                    onClick={() => console.log('Settings clicked')}
+                    onClick={() => navigate('/settings')}
                     variant="ghost"
                     size="icon"
                     className="w-full h-10 hover:bg-muted hover:text-sidebar-foreground"
@@ -227,7 +230,7 @@ export function ConversationSidebar({
             </TooltipProvider>
           ) : (
             <Button
-              onClick={() => console.log('Settings clicked')}
+              onClick={() => navigate('/settings')}
               variant="ghost"
               className="w-full justify-start gap-2 hover:bg-muted hover:text-sidebar-foreground"
               size="sm"
@@ -239,12 +242,12 @@ export function ConversationSidebar({
         </div>
       </SidebarFooter>
 
-      {/* Feedback Dialog */}
       <FeedbackDialog
         open={feedbackOpen}
         onOpenChange={setFeedbackOpen}
         userId={userId}
       />
+
     </Sidebar>
   );
 }

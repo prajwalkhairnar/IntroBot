@@ -4,8 +4,9 @@ import { MessageInput } from './MessageInput';
 import { WelcomeScreen } from './WelcomeScreen';
 import { useChat } from '@/hooks/useChat';
 import { useTheme } from '@/hooks/useTheme';
-import { Moon, Sun } from 'lucide-react';
+import { Moon, Sun, Download, FileDown } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { exportConversation } from '@/lib/exportConversation';
 
 interface ChatInterfaceProps {
   conversationId: string | null;
@@ -47,6 +48,25 @@ export function ChatInterface({
     handleSend(message);
   }, [handleSend]);
 
+  const handleExport = useCallback(() => {
+    if (messages.length > 0) {
+      exportConversation(messages, {
+        format: 'txt',
+        conversationTitle: conversationTitle || 'Conversation',
+        includeTimestamps: true,
+      });
+    }
+  }, [messages, conversationTitle]);
+
+  const handleDownloadCV = useCallback(() => {
+    const link = document.createElement('a');
+    link.href = '/cv.pdf'; // CV should be placed in the public folder
+    link.download = 'Prajwal_Khairnar_CV.pdf';
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  }, []);
+
   const showWelcome = messages.length === 0 && !loading;
 
   return (
@@ -59,6 +79,24 @@ export function ChatInterface({
               {conversationTitle || 'New Conversation'}
             </h1>
           </div>
+          <Button
+            variant="ghost"
+            onClick={handleExport}
+            className="shrink-0 hover:bg-muted hover:text-foreground gap-2"
+            title="Export conversation"
+          >
+            <FileDown className="h-4 w-4" />
+            <span className="hidden sm:inline">Export</span>
+          </Button>
+          <Button
+            variant="ghost"
+            onClick={handleDownloadCV}
+            className="shrink-0 hover:bg-muted hover:text-foreground gap-2"
+            title="Download CV"
+          >
+            <Download className="h-4 w-4" />
+            <span className="hidden sm:inline">Download CV</span>
+          </Button>
           <Button
             variant="ghost"
             size="icon"

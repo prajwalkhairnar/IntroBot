@@ -6,6 +6,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { cn } from '@/lib/utils';
 import { getIntroduction, SOCIAL_LINKS } from '@/config/greetings';
 import { useTheme } from '@/hooks/useTheme';
+import { toast } from '@/components/ui/sonner';
 
 interface WelcomeScreenProps {
   onExampleClick?: (message: string) => void;
@@ -51,6 +52,9 @@ export function WelcomeScreen({ onExampleClick, onSend, loading }: WelcomeScreen
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
+    toast.success('CV downloaded!', {
+      description: 'Your CV has been downloaded successfully.',
+    });
   };
 
   const handleLinkedInClick = () => {

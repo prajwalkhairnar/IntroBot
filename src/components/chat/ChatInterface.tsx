@@ -7,6 +7,7 @@ import { useTheme } from '@/hooks/useTheme';
 import { Moon, Sun, Download, FileDown } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { exportConversation } from '@/lib/exportConversation';
+import { toast } from '@/components/ui/sonner';
 
 interface ChatInterfaceProps {
   conversationId: string | null;
@@ -78,6 +79,13 @@ export function ChatInterface({
         conversationTitle: conversationTitle || 'Conversation',
         includeTimestamps: true,
       });
+      toast.success('Conversation exported!', {
+        description: 'Your conversation has been downloaded as a text file.',
+      });
+    } else {
+      toast.error('No messages to export', {
+        description: 'Start a conversation first to export it.',
+      });
     }
   }, [messages, conversationTitle]);
 
@@ -88,6 +96,9 @@ export function ChatInterface({
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
+    toast.success('CV downloaded!', {
+      description: 'Your CV has been downloaded successfully.',
+    });
   }, []);
 
 
@@ -149,7 +160,7 @@ export function ChatInterface({
           </div>
         ) : (
           <div
-            className="flex-1 animate-fade-in-up"
+            className="flex-1 flex flex-col min-h-0 animate-fade-in-up"
           >
             <MessageList messages={messages} loading={loading} />
           </div>

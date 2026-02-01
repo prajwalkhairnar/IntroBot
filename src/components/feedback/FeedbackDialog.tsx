@@ -12,7 +12,7 @@ import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { useToast } from '@/hooks/use-toast';
+import { toast } from '@/components/ui/sonner';
 import { supabase } from '@/lib/supabase';
 
 interface FeedbackDialogProps {
@@ -27,14 +27,11 @@ export function FeedbackDialog({ open, onOpenChange, userId }: FeedbackDialogPro
     const [comments, setComments] = useState('');
     const [email, setEmail] = useState('');
     const [isSubmitting, setIsSubmitting] = useState(false);
-    const { toast } = useToast();
 
     const handleSubmit = async () => {
         if (rating === 0) {
-            toast({
-                title: 'Rating required',
+            toast.error('Rating required', {
                 description: 'Please select a star rating before submitting.',
-                variant: 'destructive',
             });
             return;
         }
@@ -51,8 +48,7 @@ export function FeedbackDialog({ open, onOpenChange, userId }: FeedbackDialogPro
 
             if (error) throw error;
 
-            toast({
-                title: 'Thank you for your feedback!',
+            toast.success('Thank you for your feedback!', {
                 description: 'We appreciate you taking the time to share your thoughts.',
             });
 
@@ -63,10 +59,8 @@ export function FeedbackDialog({ open, onOpenChange, userId }: FeedbackDialogPro
             onOpenChange(false);
         } catch (error) {
             console.error('Error submitting feedback:', error);
-            toast({
-                title: 'Submission failed',
+            toast.error('Submission failed', {
                 description: 'There was an error submitting your feedback. Please try again.',
-                variant: 'destructive',
             });
         } finally {
             setIsSubmitting(false);

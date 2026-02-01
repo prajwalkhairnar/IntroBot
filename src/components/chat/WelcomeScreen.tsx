@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect, KeyboardEvent } from 'react';
 import { AnimatedLogo } from './AnimatedLogo';
-import { Send, Paperclip, Moon, Sun } from 'lucide-react';
+import { Send, Paperclip, Moon, Sun, Download } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { cn } from '@/lib/utils';
@@ -43,10 +43,28 @@ export function WelcomeScreen({ onExampleClick, onSend, loading }: WelcomeScreen
     }
   };
 
+  const handleDownloadCV = () => {
+    // Create a link to download the CV
+    const link = document.createElement('a');
+    link.href = '/cv.pdf'; // CV should be placed in the public folder
+    link.download = 'Prajwal_Khairnar_CV.pdf';
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
+
   return (
     <div className="flex-1 flex flex-col items-center justify-center px-4 py-12 relative">
-      {/* Theme toggle in top right */}
-      <div className="absolute top-4 right-4">
+      {/* Download CV and Theme toggle in top right */}
+      <div className="absolute top-4 right-4 flex items-center gap-2">
+        <Button
+          variant="ghost"
+          onClick={handleDownloadCV}
+          className="shrink-0 hover:bg-muted hover:text-foreground gap-2"
+        >
+          <Download className="h-4 w-4" />
+          <span>Download CV</span>
+        </Button>
         <Button
           variant="ghost"
           size="icon"

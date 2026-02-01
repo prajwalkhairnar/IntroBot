@@ -3,6 +3,7 @@ import { ConversationSidebar } from '@/components/chat/ConversationSidebar';
 import { ChatInterface } from '@/components/chat/ChatInterface';
 import { useConversations } from '@/hooks/useConversations';
 import { SidebarProvider, SidebarInset, SidebarTrigger } from '@/components/ui/sidebar';
+import { getUserId } from '@/lib/userSession';
 
 const Index = () => {
   const {
@@ -49,6 +50,7 @@ const Index = () => {
           onNewChat={handleNewChat}
           onSelectConversation={selectConversation}
           onDeleteConversation={deleteConversation}
+          userId={getUserId()}
         />
 
         <SidebarInset>

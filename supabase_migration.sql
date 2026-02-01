@@ -77,8 +77,34 @@ CREATE TRIGGER update_conversations_updated_at
     FOR EACH ROW
     EXECUTE FUNCTION update_updated_at_column();
 
+-- Create feedback table
+CREATE TABLE IF NOT EXISTS feedback (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    rating INTEGER NOT NULL CHECK (rating >= 1 AND rating <= 5),
+    comments TEXT,
+    email TEXT,
+    user_id TEXT,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
+-- Create index for feedback
+CREATE INDEX IF NOT EXISTS idx_feedback_created_at ON feedback(created_at DESC);
+CREATE INDEX IF NOT EXISTS idx_feedback_rating ON feedback(rating);
+
+-- Enable Row Level Security for feedback
+ALTER TABLE feedback ENABLE ROW LEVEL SECURITY;
+
+-- Drop existing policy if it exists
+DROP POLICY IF EXISTS "Allow anonymous users to submit feedback" ON feedback;
+
+-- Create permissive RLS policy for feedback (allow anyone to submit)
+CREATE POLICY "Allow anonymous users to submit feedback"
+    ON feedback
+    FOR INSERT
+    WITH CHECK (true);
+
 -- Success message
 DO $$
 BEGIN
-    RAISE NOTICE 'Migration completed successfully! Tables created: conversations, messages';
+    RAISE NOTICE 'Migration completed successfully! Tables created: conversations, messages, feedback';
 END $$;

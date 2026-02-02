@@ -51,18 +51,10 @@ export default function Settings() {
         <div className="min-h-screen bg-background p-4 md:p-8">
             <div className={`mx-auto transition-all duration-300 ${isAuthenticated ? 'max-w-7xl' : 'max-w-md'}`}>
                 {/* Header */}
-                <div className="flex items-center justify-between mb-8">
-                    <Button
-                        variant="ghost"
-                        onClick={() => navigate('/')}
-                        className="gap-2 pl-0 hover:pl-2 transition-all"
-                    >
-                        <ArrowLeft className="h-4 w-4" />
-                        Back to Chat
-                    </Button>
-
+                {/* Header */}
+                <div className="flex flex-col items-start gap-4 mb-8">
                     {isAuthenticated && (
-                        <div className="flex flex-col items-end">
+                        <div className="flex flex-col items-start">
                             <div className="flex items-center gap-2 text-primary">
                                 <Shield className="h-5 w-5" />
                                 <h1 className="text-xl font-bold">Mission Control</h1>
@@ -70,6 +62,15 @@ export default function Settings() {
                             <p className="text-sm text-muted-foreground">Logged in as {serviceName}</p>
                         </div>
                     )}
+
+                    <Button
+                        variant="ghost"
+                        onClick={() => navigate('/')}
+                        className="gap-2 text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
+                    >
+                        <ArrowLeft className="h-4 w-4" />
+                        Back to Chat
+                    </Button>
                 </div>
 
                 {/* Content */}

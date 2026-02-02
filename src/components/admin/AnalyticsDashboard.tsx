@@ -66,32 +66,42 @@ export function AnalyticsDashboard() {
                 .gte('created_at', thirtyDaysAgo.toISOString())
                 .order('created_at', { ascending: true });
 
-            if (recentConversations) {
-                const dayMap = new Map<string, { date: string; sessions: number; uniqueUsers: Set<string> }>();
+            // Initialize map with all 30 days
+            const dayMap = new Map<string, { date: string; sessions: number; uniqueUsers: Set<string> }>();
 
+            for (let i = 29; i >= 0; i--) {
+                const d = new Date();
+                d.setDate(d.getDate() - i);
+                const dateKey = d.toLocaleDateString('en-US', {
+                    month: 'short',
+                    day: 'numeric',
+                });
+                dayMap.set(dateKey, { date: dateKey, sessions: 0, uniqueUsers: new Set() });
+            }
+
+            if (recentConversations) {
                 recentConversations.forEach((conv) => {
                     const date = new Date(conv.created_at).toLocaleDateString('en-US', {
                         month: 'short',
                         day: 'numeric',
                     });
 
-                    if (!dayMap.has(date)) {
-                        dayMap.set(date, { date, sessions: 0, uniqueUsers: new Set() });
+                    // Only update if the date falls within our 30-day window (should always be true due to query)
+                    if (dayMap.has(date)) {
+                        const entry = dayMap.get(date)!;
+                        entry.sessions += 1;
+                        entry.uniqueUsers.add(conv.user_id);
                     }
-
-                    const entry = dayMap.get(date)!;
-                    entry.sessions += 1;
-                    entry.uniqueUsers.add(conv.user_id);
                 });
-
-                const chartData = Array.from(dayMap.values()).map((entry) => ({
-                    date: entry.date,
-                    sessions: entry.sessions,
-                    activeUsers: entry.uniqueUsers.size,
-                }));
-
-                setDailyStats(chartData);
             }
+
+            const chartData = Array.from(dayMap.values()).map((entry) => ({
+                date: entry.date,
+                sessions: entry.sessions,
+                activeUsers: entry.uniqueUsers.size,
+            }));
+
+            setDailyStats(chartData);
         } catch (error) {
             console.error('Error fetching analytics:', error);
         } finally {
@@ -169,32 +179,34 @@ export function AnalyticsDashboard() {
                     <CardContent className="h-[300px]">
                         <ResponsiveContainer width="100%" height="100%">
                             <LineChart data={dailyStats}>
-                                <CartesianGrid strokeDasharray="3 3" vertical={false} />
+                                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="hsl(var(--border))" />
                                 <XAxis
                                     dataKey="date"
-                                    tick={{ fontSize: 12 }}
+                                    tick={{ fontSize: 12, fill: 'hsl(var(--muted-foreground))' }}
                                     tickLine={false}
                                     axisLine={false}
                                 />
                                 <YAxis
-                                    tick={{ fontSize: 12 }}
+                                    tick={{ fontSize: 12, fill: 'hsl(var(--muted-foreground))' }}
                                     tickLine={false}
                                     axisLine={false}
                                 />
                                 <Tooltip
                                     contentStyle={{
-                                        backgroundColor: 'var(--background)',
+                                        backgroundColor: 'hsl(var(--background))',
                                         borderRadius: '8px',
-                                        border: '1px solid var(--border)',
-                                        boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)'
+                                        border: '1px solid hsl(var(--border))',
+                                        boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)',
+                                        color: 'hsl(var(--foreground))'
                                     }}
                                 />
                                 <Line
                                     type="monotone"
                                     dataKey="sessions"
-                                    stroke="var(--primary)"
-                                    strokeWidth={2}
-                                    dot={false}
+                                    stroke="hsl(var(--primary))"
+                                    strokeWidth={3}
+                                    dot={{ r: 4, strokeWidth: 2, stroke: 'hsl(var(--primary))', fill: 'hsl(var(--background))' }}
+                                    activeDot={{ r: 6 }}
                                 />
                             </LineChart>
                         </ResponsiveContainer>
@@ -208,30 +220,31 @@ export function AnalyticsDashboard() {
                     <CardContent className="h-[300px]">
                         <ResponsiveContainer width="100%" height="100%">
                             <BarChart data={dailyStats}>
-                                <CartesianGrid strokeDasharray="3 3" vertical={false} />
+                                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="hsl(var(--border))" />
                                 <XAxis
                                     dataKey="date"
-                                    tick={{ fontSize: 12 }}
+                                    tick={{ fontSize: 12, fill: 'hsl(var(--muted-foreground))' }}
                                     tickLine={false}
                                     axisLine={false}
                                 />
                                 <YAxis
-                                    tick={{ fontSize: 12 }}
+                                    tick={{ fontSize: 12, fill: 'hsl(var(--muted-foreground))' }}
                                     tickLine={false}
                                     axisLine={false}
                                 />
                                 <Tooltip
-                                    cursor={{ fill: 'var(--muted)', opacity: 0.2 }}
+                                    cursor={{ fill: 'transparent' }}
                                     contentStyle={{
-                                        backgroundColor: 'var(--background)',
+                                        backgroundColor: 'hsl(var(--background))',
                                         borderRadius: '8px',
-                                        border: '1px solid var(--border)',
-                                        boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)'
+                                        border: '1px solid hsl(var(--border))',
+                                        boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)',
+                                        color: 'hsl(var(--foreground))'
                                     }}
                                 />
                                 <Bar
                                     dataKey="activeUsers"
-                                    fill="var(--primary)"
+                                    fill="hsl(var(--primary))"
                                     radius={[4, 4, 0, 0]}
                                     maxBarSize={50}
                                 />

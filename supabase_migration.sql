@@ -103,6 +103,12 @@ CREATE POLICY "Allow anonymous users to submit feedback"
     FOR INSERT
     WITH CHECK (true);
 
+-- Create permissive RLS policy for feedback (allow anyone to read for reviews display)
+CREATE POLICY "Allow anonymous users to read feedback"
+    ON feedback
+    FOR SELECT
+    USING (true);
+
 -- Create admin_credentials table
 CREATE TABLE IF NOT EXISTS admin_credentials (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),

@@ -151,7 +151,7 @@ export function WelcomeScreen({ onExampleClick, onSend, loading }: WelcomeScreen
                 value={message}
                 onChange={(e) => setMessage(e.target.value)}
                 onKeyDown={handleKeyDown}
-                placeholder="Type here.."
+                placeholder="Ask me something.."
                 disabled={loading}
                 className={cn(
                   "flex-1 min-h-[120px] max-h-[200px] resize-none bg-transparent border-0 focus-visible:ring-0 focus-visible:ring-offset-0 px-3 py-3 text-base",

@@ -5,10 +5,11 @@ import { MessageInput } from './MessageInput';
 import { WelcomeScreen } from './WelcomeScreen';
 import { useChat } from '@/hooks/useChat';
 import { useTheme } from '@/hooks/useTheme';
-import { Moon, Sun, Download, FileDown, Settings } from 'lucide-react';
+import { Moon, Sun, Download, FileDown, Settings, Menu } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { exportConversation } from '@/lib/exportConversation';
 import { toast } from '@/components/ui/sonner';
+import { SidebarTrigger } from '@/components/ui/sidebar';
 
 
 interface ChatInterfaceProps {
@@ -109,16 +110,20 @@ export function ChatInterface({
     <div className="flex flex-col h-full bg-background">
       {/* Header - only show when there are messages */}
       {!showWelcome && (
-        <header className="flex items-center gap-3 p-4 bg-background/80 backdrop-blur-sm h-16 animate-fade-in">
+        <header className="flex items-center gap-1.5 sm:gap-3 p-2 sm:p-4 bg-background/80 backdrop-blur-sm h-14 sm:h-16 animate-fade-in">
+          {/* Mobile menu button */}
+          <SidebarTrigger className="shrink-0 hover:bg-muted hover:text-foreground h-9 w-9 border border-border" />
+
           <div className="flex-1 min-w-0">
-            <h1 className="font-semibold truncate text-foreground">
+            <h1 className="font-semibold truncate text-foreground text-sm sm:text-base">
               {conversationTitle || 'New Conversation'}
             </h1>
           </div>
           <Button
             variant="ghost"
+            size="icon"
             onClick={handleExport}
-            className="shrink-0 hover:bg-muted hover:text-foreground gap-2"
+            className="shrink-0 hover:bg-muted hover:text-foreground h-9 w-9 sm:h-auto sm:w-auto sm:gap-2"
             title="Export conversation"
           >
             <FileDown className="h-4 w-4" />
@@ -126,8 +131,9 @@ export function ChatInterface({
           </Button>
           <Button
             variant="ghost"
+            size="icon"
             onClick={handleDownloadCV}
-            className="shrink-0 hover:bg-muted hover:text-foreground gap-2"
+            className="shrink-0 hover:bg-muted hover:text-foreground h-9 w-9 sm:h-auto sm:w-auto sm:gap-2"
             title="Download CV"
           >
             <Download className="h-4 w-4" />

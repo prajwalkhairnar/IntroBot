@@ -46,11 +46,26 @@ export function ConversationSidebar({
   onDeleteConversation,
   userId,
 }: ConversationSidebarProps) {
-  const { state } = useSidebar();
+  const { state, isMobile, setOpenMobile } = useSidebar();
   const isCollapsed = state === 'collapsed';
   const [feedbackOpen, setFeedbackOpen] = useState(false);
   const navigate = useNavigate();
   const { isAuthenticated } = useAdmin();
+
+  // Auto-close sidebar on mobile when actions are taken
+  const handleNewChat = () => {
+    onNewChat();
+    if (isMobile) {
+      setOpenMobile(false);
+    }
+  };
+
+  const handleSelectConversation = (id: string) => {
+    onSelectConversation(id);
+    if (isMobile) {
+      setOpenMobile(false);
+    }
+  };
 
   const formatDate = (dateString: string) => {
     const date = new Date(dateString);
@@ -77,12 +92,12 @@ export function ConversationSidebar({
         {/* Title and Toggle - aligned with chat header */}
         <div className="flex items-center justify-between gap-3 px-4 h-16">
           <button
-            onClick={onNewChat}
-            className="font-semibold text-lg text-sidebar-foreground group-data-[collapsible=icon]:hidden hover:opacity-80 transition-opacity cursor-pointer"
+            onClick={handleNewChat}
+            className="font-semibold text-lg text-foreground group-data-[collapsible=icon]:hidden hover:opacity-80 transition-opacity cursor-pointer"
           >
             IntroBot
           </button>
-          <SidebarTrigger className="ml-auto hover:bg-muted hover:text-sidebar-foreground" />
+          <SidebarTrigger className="ml-auto text-foreground hover:bg-muted hover:text-foreground" />
         </div>
 
         {/* New Chat Button */}
@@ -92,10 +107,10 @@ export function ConversationSidebar({
               <Tooltip>
                 <TooltipTrigger asChild>
                   <Button
-                    onClick={onNewChat}
+                    onClick={handleNewChat}
                     variant="ghost"
                     size="icon"
-                    className="w-full h-10 hover:bg-muted hover:text-sidebar-foreground"
+                    className="w-full h-10 text-foreground hover:bg-muted hover:text-foreground"
                   >
                     <Plus className="h-5 w-5" />
                   </Button>
@@ -107,9 +122,9 @@ export function ConversationSidebar({
             </TooltipProvider>
           ) : (
             <Button
-              onClick={onNewChat}
+              onClick={handleNewChat}
               variant="ghost"
-              className="w-full justify-start gap-2 hover:bg-muted hover:text-sidebar-foreground"
+              className="w-full justify-start gap-2 text-foreground hover:bg-muted hover:text-foreground"
               size="sm"
             >
               <Plus className="h-4 w-4 shrink-0" />
@@ -128,7 +143,7 @@ export function ConversationSidebar({
                     onClick={() => setFeedbackOpen(true)}
                     variant="ghost"
                     size="icon"
-                    className="w-full h-10 hover:bg-muted hover:text-sidebar-foreground"
+                    className="w-full h-10 text-foreground hover:bg-muted hover:text-foreground"
                   >
                     <Star className="h-5 w-5" />
                   </Button>
@@ -142,7 +157,7 @@ export function ConversationSidebar({
             <Button
               onClick={() => setFeedbackOpen(true)}
               variant="ghost"
-              className="w-full justify-start gap-2 hover:bg-muted hover:text-sidebar-foreground"
+              className="w-full justify-start gap-2 text-foreground hover:bg-muted hover:text-foreground"
               size="sm"
             >
               <Star className="h-4 w-4 shrink-0" />
@@ -161,10 +176,10 @@ export function ConversationSidebar({
                 {convs.map((conversation) => (
                   <SidebarMenuItem key={conversation.id}>
                     <SidebarMenuButton
-                      onClick={() => onSelectConversation(conversation.id)}
+                      onClick={() => handleSelectConversation(conversation.id)}
                       isActive={activeConversationId === conversation.id}
                       tooltip={conversation.title}
-                      className="group-data-[collapsible=icon]:hidden hover:bg-muted hover:text-sidebar-foreground"
+                      className="group-data-[collapsible=icon]:hidden text-foreground hover:bg-muted hover:text-foreground"
                     >
                       <span className="truncate text-sm font-medium">
                         {conversation.title}
@@ -243,7 +258,7 @@ export function ConversationSidebar({
                     onClick={() => navigate('/settings')}
                     variant="ghost"
                     size="icon"
-                    className="w-full h-10 hover:bg-muted hover:text-sidebar-foreground"
+                    className="w-full h-10 text-foreground hover:bg-muted hover:text-foreground"
                   >
                     <Settings className="h-5 w-5" />
                   </Button>
@@ -257,7 +272,7 @@ export function ConversationSidebar({
             <Button
               onClick={() => navigate('/settings')}
               variant="ghost"
-              className="w-full justify-start gap-2 hover:bg-muted hover:text-sidebar-foreground"
+              className="w-full justify-start gap-2 text-foreground hover:bg-muted hover:text-foreground"
               size="sm"
             >
               <Settings className="h-4 w-4 shrink-0" />

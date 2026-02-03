@@ -41,8 +41,11 @@ const Index = () => {
     }
   }, [activeConversationId, updateConversationTitle]);
 
+  // Default sidebar to closed on mobile, open on desktop
+  const isMobile = typeof window !== 'undefined' && window.innerWidth < 768;
+
   return (
-    <SidebarProvider defaultOpen={true}>
+    <SidebarProvider defaultOpen={!isMobile}>
       <div className="flex h-screen w-full bg-background overflow-hidden">
         <ConversationSidebar
           conversations={conversations}

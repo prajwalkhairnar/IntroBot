@@ -14,7 +14,12 @@ import {
 } from 'recharts';
 import { Loader2, MessageSquare, Users, Star, Activity } from 'lucide-react';
 
-export function AnalyticsDashboard() {
+interface AnalyticsDashboardProps {
+    refreshTrigger?: number;
+    onRefreshComplete?: () => void;
+}
+
+export function AnalyticsDashboard({ refreshTrigger = 0, onRefreshComplete }: AnalyticsDashboardProps) {
     const [loading, setLoading] = useState(true);
     const [stats, setStats] = useState({
         totalConversations: 0,
@@ -26,9 +31,10 @@ export function AnalyticsDashboard() {
 
     useEffect(() => {
         fetchStats();
-    }, []);
+    }, [refreshTrigger]);
 
     const fetchStats = async () => {
+        setLoading(true);
         try {
             // Fetch basic counts
             const { count: conversationsCount } = await supabase
@@ -106,6 +112,7 @@ export function AnalyticsDashboard() {
             console.error('Error fetching analytics:', error);
         } finally {
             setLoading(false);
+            if (onRefreshComplete) onRefreshComplete();
         }
     };
 
@@ -178,7 +185,7 @@ export function AnalyticsDashboard() {
                     </CardHeader>
                     <CardContent className="h-[300px]">
                         <ResponsiveContainer width="100%" height="100%">
-                            <LineChart data={dailyStats}>
+                            <LineChart key={refreshTrigger} data={dailyStats}>
                                 <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="hsl(var(--border))" />
                                 <XAxis
                                     dataKey="date"
@@ -207,6 +214,8 @@ export function AnalyticsDashboard() {
                                     strokeWidth={3}
                                     dot={{ r: 4, strokeWidth: 2, stroke: 'hsl(var(--primary))', fill: 'hsl(var(--background))' }}
                                     activeDot={{ r: 6 }}
+                                    animationDuration={2000}
+                                    animationEasing="ease-in-out"
                                 />
                             </LineChart>
                         </ResponsiveContainer>
@@ -219,7 +228,7 @@ export function AnalyticsDashboard() {
                     </CardHeader>
                     <CardContent className="h-[300px]">
                         <ResponsiveContainer width="100%" height="100%">
-                            <BarChart data={dailyStats}>
+                            <BarChart key={refreshTrigger} data={dailyStats}>
                                 <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="hsl(var(--border))" />
                                 <XAxis
                                     dataKey="date"
@@ -247,6 +256,8 @@ export function AnalyticsDashboard() {
                                     fill="hsl(var(--primary))"
                                     radius={[4, 4, 0, 0]}
                                     maxBarSize={50}
+                                    animationDuration={2000}
+                                    animationEasing="ease-in-out"
                                 />
                             </BarChart>
                         </ResponsiveContainer>

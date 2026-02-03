@@ -7,6 +7,7 @@ import { cn } from '@/lib/utils';
 import { getIntroduction, SOCIAL_LINKS } from '@/config/greetings';
 import { useTheme } from '@/hooks/useTheme';
 import { toast } from '@/components/ui/sonner';
+import { registerInterest } from '@/services/interestService';
 
 interface WelcomeScreenProps {
   onExampleClick?: (message: string) => void;
@@ -17,6 +18,8 @@ interface WelcomeScreenProps {
 export function WelcomeScreen({ onExampleClick, onSend, loading }: WelcomeScreenProps) {
   const [message, setMessage] = useState('');
   const [intro] = useState(() => getIntroduction());
+  const [interestEmail, setInterestEmail] = useState('');
+  const [isSubmittingInterest, setIsSubmittingInterest] = useState(false);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const { theme, toggleTheme } = useTheme();
 
@@ -68,6 +71,35 @@ export function WelcomeScreen({ onExampleClick, onSend, loading }: WelcomeScreen
   const handleEmailClick = () => {
     window.location.href = `mailto:${SOCIAL_LINKS.email}`;
   };
+
+  const handleInterestSubmit = async () => {
+    // Basic email validation
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!interestEmail.trim()) {
+      toast.error('Please enter your email address');
+      return;
+    }
+    if (!emailRegex.test(interestEmail)) {
+      toast.error('Please enter a valid email address');
+      return;
+    }
+
+    setIsSubmittingInterest(true);
+    const result = await registerInterest({ email: interestEmail });
+    setIsSubmittingInterest(false);
+
+    if (result.success) {
+      toast.success('Thank you for your interest!', {
+        description: 'We\'ll reach out to you soon about your own IntroBot instance.',
+      });
+      setInterestEmail(''); // Clear the input
+    } else {
+      toast.error('Registration failed', {
+        description: result.error || 'Please try again later.',
+      });
+    }
+  };
+
 
   return (
     <div className="flex-1 flex flex-col items-center justify-center px-4 py-12 relative">
@@ -188,6 +220,47 @@ export function WelcomeScreen({ onExampleClick, onSend, loading }: WelcomeScreen
             <p className="text-xs text-center text-muted-foreground mt-2">
               Press Enter to send, Shift+Enter for new line
             </p>
+
+            {/* Register Interest CTA */}
+            <div className="mt-6 pt-4 border-t border-border/30">
+              <p className="text-xs text-center text-muted-foreground mb-3">
+                Want your own IntroBot?
+              </p>
+              <div className="flex items-center gap-2 max-w-md mx-auto">
+                <input
+                  type="email"
+                  value={interestEmail}
+                  onChange={(e) => setInterestEmail(e.target.value)}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter' && !isSubmittingInterest) {
+                      handleInterestSubmit();
+                    }
+                  }}
+                  placeholder="Enter your email"
+                  disabled={isSubmittingInterest}
+                  className={cn(
+                    "flex-1 h-9 px-3 py-2 text-sm rounded-lg",
+                    "bg-background border border-border",
+                    "focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary",
+                    "placeholder:text-muted-foreground",
+                    "transition-all",
+                    isSubmittingInterest && "opacity-50 cursor-not-allowed"
+                  )}
+                />
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={handleInterestSubmit}
+                  disabled={isSubmittingInterest || !interestEmail.trim()}
+                  className={cn(
+                    "h-9 px-4 transition-all hover:bg-muted hover:text-foreground",
+                    (!interestEmail.trim() || isSubmittingInterest) && "opacity-50 cursor-not-allowed"
+                  )}
+                >
+                  {isSubmittingInterest ? 'Submitting...' : 'Register Interest'}
+                </Button>
+              </div>
+            </div>
           </div>
         </div>
       </div>

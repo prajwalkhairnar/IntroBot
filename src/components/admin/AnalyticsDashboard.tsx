@@ -15,7 +15,7 @@ import {
     Pie,
     Cell,
 } from 'recharts';
-import { Loader2, MessageSquare, Users, Star, Activity, TrendingUp, Clock } from 'lucide-react';
+import { Loader2, MessageSquare, Users, Star, Activity, TrendingUp, Clock, Mail } from 'lucide-react';
 
 interface AnalyticsDashboardProps {
     refreshTrigger?: number;
@@ -36,11 +36,13 @@ export function AnalyticsDashboard({ refreshTrigger = 0, onRefreshComplete }: An
         weekOverWeekGrowth: 0,
         avgSessionDuration: '',
         userMessageRatio: 0,
+        totalInterestRegistrations: 0,
     });
     const [dailyStats, setDailyStats] = useState<any[]>([]);
     const [ratingDistribution, setRatingDistribution] = useState<any[]>([]);
     const [peakHours, setPeakHours] = useState<any[]>([]);
     const [recentFeedback, setRecentFeedback] = useState<any[]>([]);
+    const [interestRegistrations, setInterestRegistrations] = useState<any[]>([]);
 
     useEffect(() => {
         fetchStats();
@@ -246,6 +248,21 @@ export function AnalyticsDashboard({ refreshTrigger = 0, onRefreshComplete }: An
 
             setRecentFeedback(feedbackComments || []);
 
+            // Fetch interest registrations
+            const { data: registrations, error: registrationsError } = await supabase
+                .from('interest_registrations')
+                .select('email, created_at, source')
+                .order('created_at', { ascending: false })
+                .limit(50);
+
+            if (registrationsError) {
+                console.error('Error fetching interest registrations:', registrationsError);
+            } else {
+                console.log('Interest registrations fetched:', registrations?.length || 0);
+            }
+
+            setInterestRegistrations(registrations || []);
+
             // Update stats with new metrics
             setStats({
                 totalConversations: conversationsCount || 0,
@@ -259,6 +276,7 @@ export function AnalyticsDashboard({ refreshTrigger = 0, onRefreshComplete }: An
                 weekOverWeekGrowth: Number(weekOverWeekGrowth.toFixed(1)),
                 avgSessionDuration,
                 userMessageRatio,
+                totalInterestRegistrations: registrations?.length || 0,
             });
         } catch (error) {
             console.error('Error fetching analytics:', error);
@@ -370,6 +388,20 @@ export function AnalyticsDashboard({ refreshTrigger = 0, onRefreshComplete }: An
                             {stats.weekOverWeekGrowth >= 0 ? '+' : ''}{stats.weekOverWeekGrowth}%
                         </div>
                         <p className="text-xs text-muted-foreground">Week-over-week change</p>
+                    </CardContent>
+                </Card>
+            </div>
+
+            {/* Key Metrics Grid - Row 3 */}
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                <Card>
+                    <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                        <CardTitle className="text-sm font-medium">Interest Registrations</CardTitle>
+                        <Mail className="h-4 w-4 text-muted-foreground" />
+                    </CardHeader>
+                    <CardContent>
+                        <div className="text-2xl font-bold">{stats.totalInterestRegistrations}</div>
+                        <p className="text-xs text-muted-foreground">Users wanting their own bot</p>
                     </CardContent>
                 </Card>
             </div>
@@ -640,6 +672,64 @@ export function AnalyticsDashboard({ refreshTrigger = 0, onRefreshComplete }: An
                                         </span>
                                     </div>
                                     <p className="text-sm text-foreground leading-relaxed">{feedback.comments}</p>
+                                </div>
+                            ))}
+                        </div>
+                    </CardContent>
+                </Card>
+            )}
+
+            {/* Interest Registrations */}
+            {interestRegistrations.length > 0 && (
+                <Card>
+                    <CardHeader>
+                        <div className="flex items-center justify-between">
+                            <CardTitle className="flex items-center gap-2">
+                                <Mail className="h-5 w-5" />
+                                Interest Registrations
+                            </CardTitle>
+                            <span className="text-sm text-muted-foreground">
+                                {interestRegistrations.length} {interestRegistrations.length === 1 ? 'registration' : 'registrations'}
+                            </span>
+                        </div>
+                    </CardHeader>
+                    <CardContent>
+                        <div className="space-y-3 max-h-[400px] overflow-y-auto pr-2">
+                            {interestRegistrations.map((registration, index) => (
+                                <div
+                                    key={index}
+                                    className="p-4 rounded-lg border border-border bg-muted/30 hover:bg-muted/50 transition-colors"
+                                >
+                                    <div className="flex justify-between items-start">
+                                        <div className="flex-1">
+                                            <div className="flex items-center gap-2 mb-1">
+                                                <Mail className="h-4 w-4 text-primary" />
+                                                <a
+                                                    href={`mailto:${registration.email}`}
+                                                    className="text-sm font-medium text-foreground hover:text-primary transition-colors"
+                                                >
+                                                    {registration.email}
+                                                </a>
+                                            </div>
+                                            <div className="flex items-center gap-3 text-xs text-muted-foreground">
+                                                <span>
+                                                    {new Date(registration.created_at).toLocaleDateString('en-US', {
+                                                        month: 'short',
+                                                        day: 'numeric',
+                                                        year: 'numeric',
+                                                        hour: '2-digit',
+                                                        minute: '2-digit',
+                                                    })}
+                                                </span>
+                                                {registration.source && (
+                                                    <>
+                                                        <span>•</span>
+                                                        <span className="capitalize">{registration.source.replace('_', ' ')}</span>
+                                                    </>
+                                                )}
+                                            </div>
+                                        </div>
+                                    </div>
                                 </div>
                             ))}
                         </div>

@@ -15,7 +15,7 @@ import {
     Pie,
     Cell,
 } from 'recharts';
-import { Loader2, MessageSquare, Users, Star, Activity, TrendingUp } from 'lucide-react';
+import { Loader2, MessageSquare, Users, Star, Activity, TrendingUp, Clock } from 'lucide-react';
 
 interface AnalyticsDashboardProps {
     refreshTrigger?: number;
@@ -34,9 +34,13 @@ export function AnalyticsDashboard({ refreshTrigger = 0, onRefreshComplete }: An
         returningUsersPercent: 0,
         feedbackResponseRate: 0,
         weekOverWeekGrowth: 0,
+        avgSessionDuration: '',
+        userMessageRatio: 0,
     });
     const [dailyStats, setDailyStats] = useState<any[]>([]);
     const [ratingDistribution, setRatingDistribution] = useState<any[]>([]);
+    const [peakHours, setPeakHours] = useState<any[]>([]);
+    const [recentFeedback, setRecentFeedback] = useState<any[]>([]);
 
     useEffect(() => {
         fetchStats();
@@ -125,18 +129,6 @@ export function AnalyticsDashboard({ refreshTrigger = 0, onRefreshComplete }: An
                 ? ((thisWeekCount || 0) - lastWeekCount) / lastWeekCount * 100
                 : 0;
 
-            setStats({
-                totalConversations: conversationsCount || 0,
-                totalMessages: messagesCount || 0,
-                averageRating: Number(averageRating.toFixed(1)),
-                totalFeedback,
-                totalUniqueUsers,
-                avgMessagesPerConv: Number(avgMessagesPerConv.toFixed(1)),
-                returningUsersPercent: Number(returningUsersPercent.toFixed(1)),
-                feedbackResponseRate: Number(feedbackResponseRate.toFixed(1)),
-                weekOverWeekGrowth: Number(weekOverWeekGrowth.toFixed(1)),
-            });
-
             // Fetch daily activity (last 30 days)
             const thirtyDaysAgo = new Date();
             thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
@@ -167,7 +159,6 @@ export function AnalyticsDashboard({ refreshTrigger = 0, onRefreshComplete }: An
                         day: 'numeric',
                     });
 
-                    // Only update if the date falls within our 30-day window (should always be true due to query)
                     if (dayMap.has(date)) {
                         const entry = dayMap.get(date)!;
                         entry.sessions += 1;
@@ -183,6 +174,92 @@ export function AnalyticsDashboard({ refreshTrigger = 0, onRefreshComplete }: An
             }));
 
             setDailyStats(chartData);
+
+            // Calculate average session duration
+            const { data: conversationsWithMessages } = await supabase
+                .from('conversations')
+                .select('id, created_at');
+
+            let totalDurationMs = 0;
+            let conversationsWithDuration = 0;
+
+            if (conversationsWithMessages) {
+                for (const conv of conversationsWithMessages) {
+                    const { data: messages } = await supabase
+                        .from('messages')
+                        .select('created_at')
+                        .eq('conversation_id', conv.id)
+                        .order('created_at', { ascending: true });
+
+                    if (messages && messages.length > 1) {
+                        const firstMsg = new Date(messages[0].created_at);
+                        const lastMsg = new Date(messages[messages.length - 1].created_at);
+                        const duration = lastMsg.getTime() - firstMsg.getTime();
+                        if (duration > 0) {
+                            totalDurationMs += duration;
+                            conversationsWithDuration++;
+                        }
+                    }
+                }
+            }
+
+            const avgDurationMs = conversationsWithDuration > 0
+                ? totalDurationMs / conversationsWithDuration
+                : 0;
+            const avgDurationMinutes = Math.floor(avgDurationMs / 60000);
+            const avgDurationSeconds = Math.floor((avgDurationMs % 60000) / 1000);
+            const avgSessionDuration = avgDurationMinutes > 0
+                ? `${avgDurationMinutes}m ${avgDurationSeconds}s`
+                : `${avgDurationSeconds}s`;
+
+            // Calculate user vs assistant message ratio
+            const { data: allMessages } = await supabase
+                .from('messages')
+                .select('role');
+
+            const userMessages = allMessages?.filter(m => m.role === 'user').length || 0;
+            const assistantMessages = allMessages?.filter(m => m.role === 'assistant').length || 0;
+            const userMessageRatio = assistantMessages > 0
+                ? Number((userMessages / assistantMessages).toFixed(2))
+                : 0;
+
+            // Calculate peak activity hours
+            const hourCounts = new Array(24).fill(0);
+            allConversations?.forEach(conv => {
+                const hour = new Date(conv.created_at).getHours();
+                hourCounts[hour]++;
+            });
+
+            const peakHoursData = hourCounts.map((count, hour) => ({
+                hour: hour === 0 ? '12 AM' : hour < 12 ? `${hour} AM` : hour === 12 ? '12 PM' : `${hour - 12} PM`,
+                count,
+            }));
+            setPeakHours(peakHoursData);
+
+            // Fetch recent feedback comments
+            const { data: feedbackComments } = await supabase
+                .from('feedback')
+                .select('rating, comments, created_at')
+                .not('comments', 'is', null)
+                .order('created_at', { ascending: false })
+                .limit(10);
+
+            setRecentFeedback(feedbackComments || []);
+
+            // Update stats with new metrics
+            setStats({
+                totalConversations: conversationsCount || 0,
+                totalMessages: messagesCount || 0,
+                averageRating: Number(averageRating.toFixed(1)),
+                totalFeedback,
+                totalUniqueUsers,
+                avgMessagesPerConv: Number(avgMessagesPerConv.toFixed(1)),
+                returningUsersPercent: Number(returningUsersPercent.toFixed(1)),
+                feedbackResponseRate: Number(feedbackResponseRate.toFixed(1)),
+                weekOverWeekGrowth: Number(weekOverWeekGrowth.toFixed(1)),
+                avgSessionDuration,
+                userMessageRatio,
+            });
         } catch (error) {
             console.error('Error fetching analytics:', error);
         } finally {
@@ -436,18 +513,6 @@ export function AnalyticsDashboard({ refreshTrigger = 0, onRefreshComplete }: An
                         <CardTitle>Engagement Overview</CardTitle>
                     </CardHeader>
                     <CardContent className="h-[300px] flex flex-col justify-center space-y-6">
-                        <div className="space-y-2">
-                            <div className="flex justify-between items-center">
-                                <span className="text-sm font-medium">Avg Messages per Conversation</span>
-                                <span className="text-2xl font-bold text-primary">{stats.avgMessagesPerConv}</span>
-                            </div>
-                            <div className="w-full bg-muted rounded-full h-2">
-                                <div
-                                    className="bg-primary h-2 rounded-full transition-all duration-1000"
-                                    style={{ width: `${Math.min((stats.avgMessagesPerConv / 20) * 100, 100)}%` }}
-                                />
-                            </div>
-                        </div>
 
                         <div className="space-y-2">
                             <div className="flex justify-between items-center">
@@ -474,9 +539,113 @@ export function AnalyticsDashboard({ refreshTrigger = 0, onRefreshComplete }: An
                                 />
                             </div>
                         </div>
+
+                        <div className="space-y-2">
+                            <div className="flex justify-between items-center">
+                                <span className="text-sm font-medium flex items-center gap-2">
+                                    <Clock className="h-4 w-4" />
+                                    Avg Session Duration
+                                </span>
+                                <span className="text-2xl font-bold text-primary">{stats.avgSessionDuration}</span>
+                            </div>
+                            <p className="text-xs text-muted-foreground">
+                                Time between first and last message
+                            </p>
+                        </div>
                     </CardContent>
                 </Card>
             </div>
+
+
+            {/* Peak Activity Hours - Full Width */}
+            <Card>
+                <CardHeader>
+                    <CardTitle>Peak Activity Hours</CardTitle>
+                </CardHeader>
+                <CardContent className="h-[300px]">
+                    <ResponsiveContainer width="100%" height="100%">
+                        <BarChart data={peakHours}>
+                            <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="hsl(var(--border))" />
+                            <XAxis
+                                dataKey="hour"
+                                tick={{ fontSize: 10, fill: 'hsl(var(--muted-foreground))' }}
+                                tickLine={false}
+                                axisLine={false}
+                                angle={-45}
+                                textAnchor="end"
+                                height={60}
+                            />
+                            <YAxis
+                                tick={{ fontSize: 12, fill: 'hsl(var(--muted-foreground))' }}
+                                tickLine={false}
+                                axisLine={false}
+                            />
+                            <Tooltip
+                                cursor={{ fill: 'transparent' }}
+                                contentStyle={{
+                                    backgroundColor: 'hsl(var(--background))',
+                                    borderRadius: '8px',
+                                    border: '1px solid hsl(var(--border))',
+                                    boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)',
+                                    color: 'hsl(var(--foreground))'
+                                }}
+                            />
+                            <Bar
+                                dataKey="count"
+                                fill="hsl(var(--primary))"
+                                radius={[4, 4, 0, 0]}
+                                maxBarSize={30}
+                                animationDuration={2000}
+                                animationEasing="ease-in-out"
+                            />
+                        </BarChart>
+                    </ResponsiveContainer>
+                </CardContent>
+            </Card>
+
+            {/* Recent Feedback Comments */}
+            {recentFeedback.length > 0 && (
+                <Card>
+                    <CardHeader>
+                        <CardTitle>Recent Feedback Comments</CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                        <div className="space-y-4 max-h-[400px] overflow-y-auto pr-2">
+                            {recentFeedback.map((feedback, index) => (
+                                <div
+                                    key={index}
+                                    className="p-4 rounded-lg border border-border bg-muted/30 hover:bg-muted/50 transition-colors"
+                                >
+                                    <div className="flex justify-between items-start mb-2">
+                                        <div className="flex items-center gap-2">
+                                            <div className="flex">
+                                                {[...Array(5)].map((_, i) => (
+                                                    <Star
+                                                        key={i}
+                                                        className={`h-4 w-4 ${i < feedback.rating
+                                                            ? 'fill-yellow-400 text-yellow-400'
+                                                            : 'text-muted-foreground'
+                                                            }`}
+                                                    />
+                                                ))}
+                                            </div>
+                                            <span className="text-sm font-semibold">{feedback.rating}/5</span>
+                                        </div>
+                                        <span className="text-xs text-muted-foreground">
+                                            {new Date(feedback.created_at).toLocaleDateString('en-US', {
+                                                month: 'short',
+                                                day: 'numeric',
+                                                year: 'numeric',
+                                            })}
+                                        </span>
+                                    </div>
+                                    <p className="text-sm text-foreground leading-relaxed">{feedback.comments}</p>
+                                </div>
+                            ))}
+                        </div>
+                    </CardContent>
+                </Card>
+            )}
         </div>
     );
 }

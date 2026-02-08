@@ -5,11 +5,12 @@ import { MessageInput } from './MessageInput';
 import { WelcomeScreen } from './WelcomeScreen';
 import { useChat } from '@/hooks/useChat';
 import { useTheme } from '@/hooks/useTheme';
-import { Moon, Sun, Download, FileDown, Settings, Menu } from 'lucide-react';
+import { Moon, Sun, Download, FileDown, Settings, Menu, UserRound, Linkedin, Github, Mail } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { exportConversation } from '@/lib/exportConversation';
 import { toast } from '@/components/ui/sonner';
 import { SidebarTrigger } from '@/components/ui/sidebar';
+import { SOCIAL_LINKS } from '@/config/greetings';
 
 
 interface ChatInterfaceProps {
@@ -34,6 +35,9 @@ export function ChatInterface({
   const [isTransitioning, setIsTransitioning] = useState(false);
   const [showWelcome, setShowWelcome] = useState(true);
   const navigate = useNavigate();
+
+  // Social buttons state
+  const [showSocialButtons, setShowSocialButtons] = useState(false);
 
   // Update welcome screen visibility based on messages
   useEffect(() => {
@@ -105,6 +109,22 @@ export function ChatInterface({
     });
   }, []);
 
+  const handleLinkedInClick = useCallback(() => {
+    window.open(SOCIAL_LINKS.linkedin, '_blank');
+  }, []);
+
+  const handleGitHubClick = useCallback(() => {
+    window.open(SOCIAL_LINKS.github, '_blank');
+  }, []);
+
+  const handleEmailClick = useCallback(() => {
+    window.location.href = `mailto:${SOCIAL_LINKS.email}`;
+  }, []);
+
+  const toggleSocialButtons = useCallback(() => {
+    setShowSocialButtons(prev => !prev);
+  }, []);
+
 
   return (
     <div className="flex flex-col h-full bg-background">
@@ -116,6 +136,58 @@ export function ChatInterface({
               {conversationTitle || 'New Conversation'}
             </h1>
           </div>
+
+          {/* Social buttons container with slide animation */}
+          <div className="flex items-center gap-1 sm:gap-2 overflow-hidden">
+            <div
+              className={`flex items-center gap-1 transition-all duration-300 ease-in-out ${showSocialButtons
+                ? 'opacity-100 max-w-[200px] sm:max-w-xs mr-1 sm:mr-2 pointer-events-auto'
+                : 'opacity-0 max-w-0 pointer-events-none'
+                }`}
+            >
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={handleLinkedInClick}
+                className="shrink-0 hover:bg-[#0077B5] hover:text-white transition-colors h-9 w-9"
+                title="LinkedIn"
+              >
+                <Linkedin className="h-4 w-4" />
+              </Button>
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={handleGitHubClick}
+                className="shrink-0 hover:bg-[#333] hover:text-white dark:hover:bg-white dark:hover:text-black transition-colors h-9 w-9"
+                title="GitHub"
+              >
+                <Github className="h-4 w-4" />
+              </Button>
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={handleEmailClick}
+                className="shrink-0 hover:bg-[#EA4335] hover:text-white transition-colors h-9 w-9"
+                title="Email"
+              >
+                <Mail className="h-4 w-4" />
+              </Button>
+            </div>
+
+            {/* Reach out button */}
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={toggleSocialButtons}
+              className={`shrink-0 hover:bg-muted hover:text-foreground h-9 gap-2 transition-all ${showSocialButtons ? 'bg-muted' : ''
+                }`}
+              title="Reach out"
+            >
+              <UserRound className="h-4 w-4" />
+              <span className="hidden sm:inline">Reach out</span>
+            </Button>
+          </div>
+
           <Button
             variant="ghost"
             size="sm"

@@ -104,11 +104,6 @@ export function WelcomeScreen({ onExampleClick, onSend, loading }: WelcomeScreen
 
   return (
     <div className="flex-1 flex flex-col items-center justify-center px-3 sm:px-4 py-6 sm:py-12 relative">
-      {/* Mobile menu button in top left */}
-      <div className="absolute top-2 sm:top-4 left-2 sm:left-4">
-        <SidebarTrigger className="shrink-0 hover:bg-muted hover:text-foreground h-9 w-9 border border-border" />
-      </div>
-
       {/* Download CV and Theme toggle in top right */}
       <div className="absolute top-2 sm:top-4 right-2 sm:right-4 flex items-center gap-1 sm:gap-2">
         <Button
@@ -231,9 +226,12 @@ export function WelcomeScreen({ onExampleClick, onSend, loading }: WelcomeScreen
 
             {/* Register Interest CTA */}
             <div className="mt-4 sm:mt-6 pt-3 sm:pt-4 border-t border-border/30">
-              <p className="text-[10px] sm:text-xs text-center text-muted-foreground mb-2 sm:mb-3">
-                Want your own IntroBot?
-              </p>
+              <div className="relative mb-2 sm:mb-3">
+                <p className="text-xs sm:text-sm text-center font-semibold bg-gradient-to-r from-primary via-primary/80 to-primary bg-clip-text text-transparent animate-in fade-in duration-700">
+                  Want your own IntroBot?
+                </p>
+                <div className="absolute inset-0 blur-xl bg-primary/10 -z-10 rounded-full" />
+              </div>
               <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 max-w-md mx-auto">
                 <input
                   type="email"

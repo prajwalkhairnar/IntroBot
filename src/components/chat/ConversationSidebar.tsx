@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Plus, Trash2, MoreHorizontal, Star, Settings, Shield } from 'lucide-react';
+import { Plus, Trash2, MoreHorizontal, Star, Settings, Shield, Sparkles } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import {
   Sidebar,
@@ -27,6 +27,16 @@ import { Conversation } from '@/types/chat';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { FeedbackDialog } from '@/components/feedback/FeedbackDialog';
 import { useAdmin } from '@/contexts/AdminContext';
+import { toast } from '@/components/ui/sonner';
+import { registerInterest } from '@/services/interestService';
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/ui/dialog';
+import { cn } from '@/lib/utils';
 
 
 interface ConversationSidebarProps {
@@ -49,6 +59,9 @@ export function ConversationSidebar({
   const { state, isMobile, setOpenMobile } = useSidebar();
   const isCollapsed = state === 'collapsed';
   const [feedbackOpen, setFeedbackOpen] = useState(false);
+  const [interestOpen, setInterestOpen] = useState(false);
+  const [interestEmail, setInterestEmail] = useState('');
+  const [isSubmittingInterest, setIsSubmittingInterest] = useState(false);
   const navigate = useNavigate();
   const { isAuthenticated } = useAdmin();
 
@@ -64,6 +77,35 @@ export function ConversationSidebar({
     onSelectConversation(id);
     if (isMobile) {
       setOpenMobile(false);
+    }
+  };
+
+  const handleInterestSubmit = async () => {
+    // Basic email validation
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!interestEmail.trim()) {
+      toast.error('Please enter your email address');
+      return;
+    }
+    if (!emailRegex.test(interestEmail)) {
+      toast.error('Please enter a valid email address');
+      return;
+    }
+
+    setIsSubmittingInterest(true);
+    const result = await registerInterest({ email: interestEmail });
+    setIsSubmittingInterest(false);
+
+    if (result.success) {
+      toast.success('Thank you for your interest!', {
+        description: 'We\'ll reach out to you soon about your own IntroBot instance.',
+      });
+      setInterestEmail(''); // Clear the input
+      setInterestOpen(false); // Close the dialog
+    } else {
+      toast.error('Registration failed', {
+        description: result.error || 'Please try again later.',
+      });
     }
   };
 
@@ -134,7 +176,7 @@ export function ConversationSidebar({
         </div>
 
         {/* Feedback Button */}
-        <div className="px-2 pb-3">
+        <div className="px-2 pb-2">
           {isCollapsed ? (
             <TooltipProvider>
               <Tooltip>
@@ -162,6 +204,41 @@ export function ConversationSidebar({
             >
               <Star className="h-4 w-4 shrink-0" />
               <span>Feedback</span>
+            </Button>
+          )}
+        </div>
+
+        {/* Want your own IntroBot? Button */}
+        <div className="px-2 pb-3">
+          {isCollapsed ? (
+            <TooltipProvider>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Button
+                    onClick={() => setInterestOpen(true)}
+                    variant="ghost"
+                    size="icon"
+                    className="w-full h-10 text-primary hover:bg-primary/10 hover:text-primary"
+                  >
+                    <Sparkles className="h-5 w-5" />
+                  </Button>
+                </TooltipTrigger>
+                <TooltipContent side="right">
+                  <p>Want your own IntroBot?</p>
+                </TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
+          ) : (
+            <Button
+              onClick={() => setInterestOpen(true)}
+              variant="ghost"
+              className="w-full justify-start gap-2 text-primary hover:bg-primary/10 hover:text-primary font-medium"
+              size="sm"
+            >
+              <Sparkles className="h-4 w-4 shrink-0" />
+              <span className="bg-gradient-to-r from-primary via-primary/80 to-primary bg-clip-text text-transparent">
+                Want your own IntroBot?
+              </span>
             </Button>
           )}
         </div>
@@ -287,6 +364,67 @@ export function ConversationSidebar({
         onOpenChange={setFeedbackOpen}
         userId={userId}
       />
+
+      {/* Interest Registration Dialog */}
+      <Dialog open={interestOpen} onOpenChange={setInterestOpen}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <div className="flex items-center gap-2 mb-2">
+              <Sparkles className="h-5 w-5 text-primary" />
+              <DialogTitle className="bg-gradient-to-r from-primary via-primary/80 to-primary bg-clip-text text-transparent">
+                Want your own IntroBot?
+              </DialogTitle>
+            </div>
+            <DialogDescription>
+              Interested in having your own personalized IntroBot? Enter your email and we'll reach out with details!
+            </DialogDescription>
+          </DialogHeader>
+          <div className="flex flex-col gap-4 py-4">
+            <div className="flex flex-col gap-2">
+              <input
+                type="email"
+                value={interestEmail}
+                onChange={(e) => setInterestEmail(e.target.value)}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter' && !isSubmittingInterest) {
+                    handleInterestSubmit();
+                  }
+                }}
+                placeholder="your.email@example.com"
+                disabled={isSubmittingInterest}
+                className={cn(
+                  "flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm",
+                  "ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium",
+                  "placeholder:text-muted-foreground",
+                  "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2",
+                  "disabled:cursor-not-allowed disabled:opacity-50",
+                  "transition-all"
+                )}
+              />
+            </div>
+            <div className="flex gap-2 justify-end">
+              <Button
+                variant="ghost"
+                onClick={() => setInterestOpen(false)}
+                disabled={isSubmittingInterest}
+                className="hover:bg-muted hover:text-foreground"
+              >
+                Cancel
+              </Button>
+              <Button
+                onClick={handleInterestSubmit}
+                disabled={isSubmittingInterest || !interestEmail.trim()}
+                className={cn(
+                  "bg-primary hover:bg-primary/90 text-primary-foreground",
+                  (!interestEmail.trim() || isSubmittingInterest) && "opacity-50 cursor-not-allowed"
+                )}
+              >
+                {isSubmittingInterest ? 'Submitting...' : 'Register Interest'}
+              </Button>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
 
     </Sidebar>
   );

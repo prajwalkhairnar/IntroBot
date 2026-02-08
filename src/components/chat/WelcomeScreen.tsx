@@ -108,9 +108,9 @@ export function WelcomeScreen({ onExampleClick, onSend, loading }: WelcomeScreen
       <div className="absolute top-2 sm:top-4 right-2 sm:right-4 flex items-center gap-1 sm:gap-2">
         <Button
           variant="ghost"
-          size="icon"
+          size="sm"
           onClick={handleDownloadCV}
-          className="shrink-0 hover:bg-muted hover:text-foreground h-9 w-9 sm:h-auto sm:w-auto sm:gap-2"
+          className="shrink-0 hover:bg-muted hover:text-foreground h-9 gap-2"
           title="Download CV"
         >
           <Download className="h-4 w-4" />

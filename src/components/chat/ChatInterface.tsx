@@ -118,9 +118,9 @@ export function ChatInterface({
           </div>
           <Button
             variant="ghost"
-            size="icon"
+            size="sm"
             onClick={handleExport}
-            className="shrink-0 hover:bg-muted hover:text-foreground h-9 w-9 sm:h-auto sm:w-auto sm:gap-2"
+            className="shrink-0 hover:bg-muted hover:text-foreground h-9 gap-2"
             title="Export conversation"
           >
             <FileDown className="h-4 w-4" />
@@ -128,22 +128,13 @@ export function ChatInterface({
           </Button>
           <Button
             variant="ghost"
-            size="icon"
+            size="sm"
             onClick={handleDownloadCV}
-            className="shrink-0 hover:bg-muted hover:text-foreground h-9 w-9 sm:h-auto sm:w-auto sm:gap-2"
+            className="shrink-0 hover:bg-muted hover:text-foreground h-9 gap-2"
             title="Download CV"
           >
             <Download className="h-4 w-4" />
             <span className="hidden sm:inline">Download CV</span>
-          </Button>
-          <Button
-            variant="ghost"
-            size="icon"
-            onClick={() => navigate('/settings')}
-            className="shrink-0 hover:bg-muted hover:text-foreground"
-            title="Settings"
-          >
-            <Settings className="h-5 w-5" />
           </Button>
           <Button
             variant="ghost"

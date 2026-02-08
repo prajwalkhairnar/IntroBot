@@ -97,12 +97,36 @@ All colors MUST be HSL.
 @layer base {
   * {
     @apply border-border;
+    /* Smooth transitions for all color changes */
+    transition: background-color 0.6s cubic-bezier(0.4, 0, 0.2, 1),
+      border-color 0.6s cubic-bezier(0.4, 0, 0.2, 1),
+      color 0.6s cubic-bezier(0.4, 0, 0.2, 1),
+      fill 0.6s cubic-bezier(0.4, 0, 0.2, 1),
+      stroke 0.6s cubic-bezier(0.4, 0, 0.2, 1);
   }
 
   body {
     @apply bg-background text-foreground;
     font-family: 'Inter', system-ui, sans-serif;
     font-feature-settings: "rlig" 1, "calt" 1;
+  }
+
+  /* Theatrical theme transition overlay */
+  html.theme-transitioning::before {
+    content: '';
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: radial-gradient(circle at center, transparent 0%, rgba(0, 0, 0, 0.03) 100%);
+    pointer-events: none;
+    z-index: 9999;
+    animation: theme-pulse 0.6s ease-out;
+  }
+
+  html.dark.theme-transitioning::before {
+    background: radial-gradient(circle at center, transparent 0%, rgba(255, 255, 255, 0.03) 100%);
   }
 }
 
@@ -171,5 +195,21 @@ All colors MUST be HSL.
 
   to {
     opacity: 1;
+  }
+}
+
+@keyframes theme-pulse {
+  0% {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+
+  50% {
+    opacity: 1;
+  }
+
+  100% {
+    opacity: 0;
+    transform: scale(1.05);
   }
 }

@@ -20,7 +20,23 @@ export function useTheme() {
   }, [theme]);
 
   const toggleTheme = useCallback(() => {
-    setTheme(prev => prev === 'light' ? 'dark' : 'light');
+    // Check if browser supports View Transition API for ultra-smooth transitions
+    if (document.startViewTransition) {
+      document.startViewTransition(() => {
+        setTheme(prev => prev === 'light' ? 'dark' : 'light');
+      });
+    } else {
+      // Fallback: Add transitioning class for pulse animation
+      const root = document.documentElement;
+      root.classList.add('theme-transitioning');
+
+      setTheme(prev => prev === 'light' ? 'dark' : 'light');
+
+      // Remove the transitioning class after animation completes
+      setTimeout(() => {
+        root.classList.remove('theme-transitioning');
+      }, 600);
+    }
   }, []);
 
   return { theme, toggleTheme };

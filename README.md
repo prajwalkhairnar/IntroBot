@@ -119,20 +119,48 @@ IntroBot uses a **hybrid architecture** that combines the best of both worlds:
    cp .env.example .env
    ```
    
-   Edit `.env` and add:
+   Edit `.env` and configure:
    ```env
+   # Supabase Configuration (Required)
    VITE_SUPABASE_URL=https://your-project.supabase.co
    VITE_SUPABASE_ANON_KEY=your_anon_key_here
    VITE_BACKEND_URL=http://localhost:3001
+   
+   # Personal Information (Optional - customize to make it yours!)
+   VITE_INTRO_NAME=Hi, I'm YourName!
+   VITE_WORK_TITLE_1=Your primary work title here
+   VITE_WORK_TITLE_2=Your alternative work title here
+   
+   # Social Links (Optional)
+   VITE_LINKEDIN_URL=https://www.linkedin.com/in/your-profile/
+   VITE_GITHUB_URL=https://github.com/yourusername
+   VITE_EMAIL=your.email@example.com
+   
+   # Export/Download Configuration (Optional)
+   VITE_CV_FILENAME=Your_Name_CV.pdf
+   VITE_ASSISTANT_NAME=YourName
    ```
    
    **Backend** (`backend/.env`):
    ```env
+   # Personal Identity (Required)
    NAME=YourName
+   
+   # Groq API Configuration (Required)
    GROQ_API_KEY=your_groq_api_key_here
    GROQ_MODEL=meta-llama/llama-4-scout-17b-16e-instruct
+   
+   # Server Configuration
    PORT=3001
+   
+   # LLM Model Parameters (Optional - tune AI behavior)
+   GROQ_TEMPERATURE=0.7              # 0.0-2.0, higher = more creative
+   GROQ_MAX_TOKENS=2048              # Maximum response length
+   GROQ_NAMING_TEMPERATURE=0.3       # Temperature for title generation
+   GROQ_NAMING_MAX_TOKENS=50         # Max tokens for conversation titles
    ```
+   
+   > 📖 **For detailed configuration guide**, see [ENV_CONFIGURATION.md](./ENV_CONFIGURATION.md)
 
 5. **Set up Supabase database**
    - Go to your Supabase dashboard → SQL Editor
@@ -383,37 +411,114 @@ For more comprehensive context handling, you can integrate Retrieval-Augmented G
 
 This is recommended when your professional context exceeds the token limits of the system prompt.
 
-## 🎨 Customization
+## ⚙️ Configuration \u0026 Customization
 
+IntroBot is **highly configurable** through environment variables. You can customize everything from AI behavior to personal branding without touching the code.
 
-### Changing AI Model
-Edit `backend/src/services/aiService.ts`:
-```typescript
-function getGroqModel(): string {
-    return process.env.GROQ_MODEL || 'meta-llama/llama-4-scout-17b-16e-instruct';
-}
+### 🎛️ Configuration System
+
+All configuration is managed through environment variables in two files:
+- **Root `.env`**: Frontend settings (personal info, social links, UI text)
+- **`backend/.env`**: Backend settings (AI parameters, API keys, server config)
+
+**📖 Complete Configuration Guide**: See [ENV_CONFIGURATION.md](./ENV_CONFIGURATION.md) for detailed documentation of all variables.
+
+### 🤖 AI Behavior Configuration
+
+Control how the AI responds by adjusting these parameters in `backend/.env`:
+
+#### Temperature (Creativity Level)
+```env
+GROQ_TEMPERATURE=0.7  # Default: balanced
+```
+- **0.0-0.3**: Focused, deterministic, consistent responses
+- **0.4-0.7**: Balanced creativity and reliability (recommended)
+- **0.8-2.0**: More creative, varied, unpredictable responses
+
+#### Response Length
+```env
+GROQ_MAX_TOKENS=2048  # Default: ~1500 words
+```
+Adjust based on your needs:
+- **512-1024**: Short, concise responses
+- **2048**: Standard length (recommended)
+- **4096+**: Longer, detailed responses
+
+#### Model Selection
+```env
+GROQ_MODEL=meta-llama/llama-4-scout-17b-16e-instruct
+```
+Available models:
+- `meta-llama/llama-4-scout-17b-16e-instruct` (default, fast)
+- `llama-3.3-70b-versatile` (more capable, slower)
+- `mixtral-8x7b-32768` (large context window)
+
+### 🎨 Personal Branding
+
+Customize the chatbot's appearance and personality through frontend environment variables:
+
+#### Welcome Screen
+```env
+VITE_INTRO_NAME=Hi, I'm Alex!
+VITE_WORK_TITLE_1=Full-stack Developer & AI Enthusiast
+VITE_WORK_TITLE_2=Building the future, one line at a time
 ```
 
-Or update `backend/.env`:
+#### Social Links
+```env
+VITE_LINKEDIN_URL=https://www.linkedin.com/in/yourprofile/
+VITE_GITHUB_URL=https://github.com/yourusername
+VITE_EMAIL=your.email@example.com
+```
+
+#### Export Settings
+```env
+VITE_CV_FILENAME=Your_Name_CV.pdf
+VITE_ASSISTANT_NAME=Alex
+```
+
+### 🎭 Professional Context
+
+For the AI to represent **your professional identity**, update the professional context file:
+
+**File**: `backend/src/context/professional-context.ts`
+
+This file contains your:
+- Current roles and responsibilities
+- Education and certifications
+- Technical expertise and skills
+- Notable projects and achievements
+- Publications and presentations
+- Professional philosophy
+
+The AI uses this context to respond as "you" in first person, drawing from your actual experience and expertise.
+
+**Example**: When someone asks "What's your background?", the AI responds based on YOUR professional context, not generic information.
+
+### 🔧 Advanced Customization
+
+#### Changing AI Model
+Edit `backend/.env`:
 ```env
 GROQ_MODEL=llama-3.3-70b-versatile
 ```
 
-### Adding Custom Greetings
+#### Custom Greetings
 Edit `src/config/greetings.ts`:
 ```typescript
-export const WELCOME_GREETINGS = [
-  "Your custom greeting here!",
-  // ... more greetings
+export const WORK_TITLES = [
+  "Your custom title here",
+  "Another title option"
 ];
 ```
 
-### Customizing Theme
-The app uses CSS variables defined in `src/index.css`. Modify the color scheme:
+#### Theme Customization
+Modify CSS variables in `src/index.css`:
 ```css
 :root {
   --background: 222.2 84% 4.9%;
   --foreground: 210 40% 98%;
+  --primary: 217.2 91.2% 59.8%;
   /* ... more variables */
 }
 ```
@@ -449,6 +554,17 @@ This project is licensed under the MIT License - see the LICENSE file for detail
 ## 📧 Contact
 
 For questions or feedback, please open an issue on GitHub.
+
+---
+
+## 📚 Documentation
+
+- **[ENV_CONFIGURATION.md](./ENV_CONFIGURATION.md)** - Complete environment variables guide
+- **[ENV_MIGRATION_SUMMARY.md](./ENV_MIGRATION_SUMMARY.md)** - Environment variables migration details
+- **[SETUP.md](./SETUP.md)** - Detailed setup instructions
+- **[BACKEND_MIGRATION_GUIDE.md](./BACKEND_MIGRATION_GUIDE.md)** - Backend architecture guide
+- **[FEEDBACK_SETUP.md](./FEEDBACK_SETUP.md)** - User feedback system setup
+- **[INTEREST_REGISTRATION_SETUP.md](./INTEREST_REGISTRATION_SETUP.md)** - Interest registration setup
 
 ---
 

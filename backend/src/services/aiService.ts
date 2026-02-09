@@ -70,8 +70,8 @@ function getModel(): ChatGroq {
         modelInstance = new ChatGroq({
             apiKey: apiKey,
             model: getGroqModel(),
-            temperature: 0.7,
-            maxTokens: 2048,
+            temperature: parseFloat(process.env.GROQ_TEMPERATURE || '0.7'),
+            maxTokens: parseInt(process.env.GROQ_MAX_TOKENS || '2048', 10),
         });
     }
     return modelInstance;
@@ -86,8 +86,8 @@ function getNamingModel(): ChatGroq {
         namingModelInstance = new ChatGroq({
             apiKey: apiKey,
             model: getGroqModel(),
-            temperature: 0.3,
-            maxTokens: 50,
+            temperature: parseFloat(process.env.GROQ_NAMING_TEMPERATURE || '0.3'),
+            maxTokens: parseInt(process.env.GROQ_NAMING_MAX_TOKENS || '50', 10),
         });
     }
     return namingModelInstance;

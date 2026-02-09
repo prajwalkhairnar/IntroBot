@@ -59,7 +59,7 @@ function formatAsText(messages: Message[], title: string, includeTimestamps: boo
     lines.push('');
 
     messages.forEach((msg, index) => {
-        const role = msg.role === 'user' ? 'You' : 'Praj';
+        const role = msg.role === 'user' ? 'You' : (import.meta.env.VITE_ASSISTANT_NAME || 'Praj');
         const timestamp = includeTimestamps ? ` [${new Date(msg.createdAt).toLocaleString()}]` : '';
 
         lines.push(`${role}${timestamp}:`);
@@ -90,7 +90,7 @@ function formatAsMarkdown(messages: Message[], title: string, includeTimestamps:
     lines.push('');
 
     messages.forEach((msg) => {
-        const role = msg.role === 'user' ? '👤 **You**' : '🤖 **Praj**';
+        const role = msg.role === 'user' ? '👤 **You**' : `🤖 **${import.meta.env.VITE_ASSISTANT_NAME || 'Praj'}**`;
         const timestamp = includeTimestamps ? ` *${new Date(msg.createdAt).toLocaleString()}*` : '';
 
         lines.push(`### ${role}${timestamp}`);

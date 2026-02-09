@@ -52,7 +52,7 @@ export function WelcomeScreen({ onExampleClick, onSend, loading }: WelcomeScreen
     // Create a link to download the CV
     const link = document.createElement('a');
     link.href = '/cv.pdf'; // CV should be placed in the public folder
-    link.download = 'Prajwal_Khairnar_CV.pdf';
+    link.download = import.meta.env.VITE_CV_FILENAME || 'Prajwal_Khairnar_CV.pdf';
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);

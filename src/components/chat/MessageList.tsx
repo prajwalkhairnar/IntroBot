@@ -48,7 +48,7 @@ function MessageBubble({ message }: { message: Message }) {
         <div className="flex items-center gap-2">
           {!isUser && (
             <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide">
-              Assistant
+              {import.meta.env.VITE_ASSISTANT_NAME || 'Assistant'}
             </p>
           )}
 
@@ -132,7 +132,7 @@ function TypingIndicator() {
       </div>
       <div className="flex-1 min-w-0 space-y-2">
         <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide">
-          Assistant
+          {import.meta.env.VITE_ASSISTANT_NAME || 'Assistant'}
         </p>
         <div className="flex items-center gap-1.5">
           <span className="w-2 h-2 bg-primary/60 rounded-full animate-bounce" style={{ animationDelay: '0ms' }} />

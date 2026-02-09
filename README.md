@@ -128,6 +128,7 @@ IntroBot uses a **hybrid architecture** that combines the best of both worlds:
    
    **Backend** (`backend/.env`):
    ```env
+   NAME=YourName
    GROQ_API_KEY=your_groq_api_key_here
    GROQ_MODEL=meta-llama/llama-4-scout-17b-16e-instruct
    PORT=3001
@@ -211,6 +212,8 @@ introbot/
 │   │   │   └── ai.routes.ts   # AI API endpoints
 │   │   ├── services/
 │   │   │   └── aiService.ts   # LangChain + Groq integration
+│   │   ├── context/
+│   │   │   └── professional-context.ts  # Professional profile for personalization
 │   │   └── types/
 │   │       └── chat.ts        # Shared types
 │   ├── package.json
@@ -284,7 +287,104 @@ railway up
 
 Don't forget to set your environment variables in your deployment platform!
 
+## 🎭 Personalization - Create Your Digital Professional Twin
+
+IntroBot can be personalized to act as **your digital professional twin** - an AI assistant that represents your professional identity and expertise. This is perfect for:
+- Personal portfolio websites
+- Professional networking
+- Automated introductions
+- Showcasing your expertise
+
+### How It Works
+
+The chatbot uses:
+1. **Professional Context** - A detailed profile of your background, skills, projects, and expertise
+2. **Configurable Name** - Your preferred name that the AI uses when responding
+3. **First-Person Responses** - The AI speaks as "you", using your professional context
+
+### Setting Up Your Professional Twin
+
+#### 1. Configure Your Name
+Set the `NAME` variable in `backend/.env`:
+```env
+NAME=YourName
+```
+
+#### 2. Update Your Professional Context
+Edit `backend/src/context/professional-context.ts` with your information:
+
+```typescript
+export const PROFESSIONAL_CONTEXT = `
+# Professional Background
+
+## Current Role
+[Your current position and organization]
+
+## Education
+- [Your degrees and institutions]
+
+## Expertise & Skills
+- [Your key skills and areas of expertise]
+
+## Notable Projects
+[Your significant projects and achievements]
+
+## Publications
+[Your publications, if any]
+
+## Certifications
+[Your professional certifications]
+
+## Professional Interests
+[What you're passionate about professionally]
+`;
+```
+
+#### 3. Restart the Backend
+After making changes, restart your backend server:
+```bash
+cd backend
+npm run dev
+```
+
+### Example Interaction
+
+**Without Personalization:**
+```
+User: What's your background?
+Bot: I'm an AI assistant designed to help answer questions...
+```
+
+**With Personalization (as Praj):**
+```
+User: What's your background?
+Bot: I work at Northern Care Alliance NHS Foundation Trust, where I focus 
+on healthcare analytics and digital innovation. I have a Master's in Data 
+Science and AI from the University of Salford, and I'm particularly 
+passionate about using NLP and machine learning to improve clinical 
+workflows and patient outcomes...
+```
+
+### Tips for Great Professional Context
+
+1. **Be Specific**: Include concrete projects, technologies, and achievements
+2. **Stay Current**: Update your context as your career progresses
+3. **Highlight Expertise**: Focus on areas where you want to showcase knowledge
+4. **Be Authentic**: Write in a tone that reflects your professional voice
+5. **Include Links**: Reference your publications, projects, or portfolio
+
+### Advanced: RAG Integration (Future)
+
+For more comprehensive context handling, you can integrate Retrieval-Augmented Generation (RAG):
+- Store extensive professional documents
+- Pull relevant context dynamically
+- Handle larger knowledge bases
+- Update context without code changes
+
+This is recommended when your professional context exceeds the token limits of the system prompt.
+
 ## 🎨 Customization
+
 
 ### Changing AI Model
 Edit `backend/src/services/aiService.ts`:

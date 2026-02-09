@@ -211,7 +211,7 @@ export function ChatInterface({
           <Button
             variant="ghost"
             size="icon"
-            onClick={toggleTheme}
+            onClick={(e) => toggleTheme(e)}
             className="shrink-0 hover:bg-muted hover:text-foreground"
           >
             {theme === 'dark' ? (

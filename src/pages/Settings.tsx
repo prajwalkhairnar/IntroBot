@@ -104,7 +104,7 @@ export default function Settings() {
                             <Button
                                 variant="ghost"
                                 size="icon"
-                                onClick={toggleTheme}
+                                onClick={(e) => toggleTheme(e)}
                                 className="shrink-0 hover:bg-muted hover:text-foreground h-9 w-9 sm:h-10 sm:w-10"
                                 title="Toggle Theme"
                             >

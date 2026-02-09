@@ -339,33 +339,31 @@ NAME=YourName
 ```
 
 #### 2. Update Your Professional Context
-Edit `backend/src/context/professional-context.ts` with your information:
+Edit `backend/src/context/professional_context.md` with your information. This file uses an XML-like structure for easy editing:
 
-```typescript
-export const PROFESSIONAL_CONTEXT = `
-# Professional Background
+```xml
+<professional_background>
+  <current_roles>
+    <role>
+      <title>Principal Software Engineer</title>
+      <company>Tech Corp</company>
+      <duration>2023 - Present</duration>
+      <description>Leading key initiatives in AI...</description>
+    </role>
+  </current_roles>
 
-## Current Role
-[Your current position and organization]
+  <previous_roles>
+    <!-- Add your history here -->
+  </previous_roles>
 
-## Education
-- [Your degrees and institutions]
+  <education>
+    <!-- Add your education here -->
+  </education>
 
-## Expertise & Skills
-- [Your key skills and areas of expertise]
-
-## Notable Projects
-[Your significant projects and achievements]
-
-## Publications
-[Your publications, if any]
-
-## Certifications
-[Your professional certifications]
-
-## Professional Interests
-[What you're passionate about professionally]
-`;
+  <technical_expertise>
+    <!-- Add your skills here -->
+  </technical_expertise>
+</professional_background>
 ```
 
 #### 3. Restart the Backend
@@ -481,7 +479,7 @@ VITE_ASSISTANT_NAME=Alex
 
 For the AI to represent **your professional identity**, update the professional context file:
 
-**File**: `backend/src/context/professional-context.ts`
+**File**: `backend/src/context/professional_context.md`
 
 This file contains your:
 - Current roles and responsibilities

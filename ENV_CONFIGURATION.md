@@ -30,6 +30,9 @@ The application uses environment variables to configure various aspects of the c
 |----------|-------------|---------|----------|
 | `NAME` | Your name (used in system prompts) | `Praj` | Yes |
 
+**Note:** The system also uses detailed professional context from `backend/src/context/professional_context.md`.
+
+
 ### Groq API Configuration
 
 | Variable | Description | Default | Required |

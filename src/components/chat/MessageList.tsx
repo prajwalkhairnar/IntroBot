@@ -24,26 +24,36 @@ const isMessageRecent = (message: Message) => {
   }
 };
 
-function MessageBubble({ message, isLast }: { message: Message; isLast: boolean }) {
+function MessageBubble({ message, isLast, onUpdate }: { message: Message; isLast: boolean; onUpdate?: () => void }) {
   const isUser = message.role === 'user';
   const [copied, setCopied] = useState(false);
+
+  // Track if we have already animated to prevent re-animation on re-renders
+  const hasAnimatedRef = useRef(false);
 
   // Determine if we should animate this message
   // It must be:
   // 1. Not a user message (Assistant only)
   // 2. The last message in the list
   // 3. Recently created (to avoid animating history on refresh)
-  const [shouldAnimate] = useState(() => !isUser && isLast && isMessageRecent(message));
+  // 4. Not previously animated
+  const shouldAnimate = !isUser && isLast && isMessageRecent(message) && !hasAnimatedRef.current;
 
   const [displayedContent, setDisplayedContent] = useState(shouldAnimate ? '' : message.content);
   const [isTyping, setIsTyping] = useState(shouldAnimate);
 
   useEffect(() => {
+    // If we shouldn't animate, just show content immediately
     if (!shouldAnimate) {
-      setDisplayedContent(message.content);
-      setIsTyping(false);
+      if (!isTyping) {
+        setDisplayedContent(message.content);
+      }
       return;
     }
+
+    hasAnimatedRef.current = true;
+    setIsTyping(true);
+    setDisplayedContent('');
 
     // Split content while preserving spaces and structure
     // We split by whitespace but keep the delimiters
@@ -56,6 +66,7 @@ function MessageBubble({ message, isLast }: { message: Message; isLast: boolean 
         currentText += words[index];
         setDisplayedContent(currentText);
         index++;
+        onUpdate?.();
       } else {
         setIsTyping(false);
         clearInterval(intervalId);
@@ -63,7 +74,8 @@ function MessageBubble({ message, isLast }: { message: Message; isLast: boolean 
     }, 20); // 20ms per word chunk for smooth but fast streaming
 
     return () => clearInterval(intervalId);
-  }, [message.content, shouldAnimate]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []); // Only run effect once on mount per message instance
 
   const handleCopy = async () => {
     try {
@@ -197,8 +209,12 @@ export function MessageList({ messages, loading }: MessageListProps) {
   const scrollRef = useRef<HTMLDivElement>(null);
   const bottomRef = useRef<HTMLDivElement>(null);
 
-  useEffect(() => {
+  const scrollToBottom = () => {
     bottomRef.current?.scrollIntoView({ behavior: 'smooth' });
+  };
+
+  useEffect(() => {
+    scrollToBottom();
   }, [messages, loading]);
 
   if (messages.length === 0 && !loading) {
@@ -213,6 +229,7 @@ export function MessageList({ messages, loading }: MessageListProps) {
             key={message.id}
             message={message}
             isLast={index === messages.length - 1}
+            onUpdate={index === messages.length - 1 ? scrollToBottom : undefined}
           />
         ))}
         {loading && <TypingIndicator />}

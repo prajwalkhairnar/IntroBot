@@ -12,9 +12,58 @@ interface MessageListProps {
   loading?: boolean;
 }
 
-function MessageBubble({ message }: { message: Message }) {
+const isMessageRecent = (message: Message) => {
+  try {
+    const created = new Date(message.createdAt).getTime();
+    const now = Date.now();
+    // Consider message recent if created within last 20 seconds
+    // allowing for some clock drift or slight delays
+    return (now - created) < 20000;
+  } catch (e) {
+    return false;
+  }
+};
+
+function MessageBubble({ message, isLast }: { message: Message; isLast: boolean }) {
   const isUser = message.role === 'user';
   const [copied, setCopied] = useState(false);
+
+  // Determine if we should animate this message
+  // It must be:
+  // 1. Not a user message (Assistant only)
+  // 2. The last message in the list
+  // 3. Recently created (to avoid animating history on refresh)
+  const [shouldAnimate] = useState(() => !isUser && isLast && isMessageRecent(message));
+
+  const [displayedContent, setDisplayedContent] = useState(shouldAnimate ? '' : message.content);
+  const [isTyping, setIsTyping] = useState(shouldAnimate);
+
+  useEffect(() => {
+    if (!shouldAnimate) {
+      setDisplayedContent(message.content);
+      setIsTyping(false);
+      return;
+    }
+
+    // Split content while preserving spaces and structure
+    // We split by whitespace but keep the delimiters
+    const words = message.content.split(/(\s+)/);
+    let index = 0;
+    let currentText = '';
+
+    const intervalId = setInterval(() => {
+      if (index < words.length) {
+        currentText += words[index];
+        setDisplayedContent(currentText);
+        index++;
+      } else {
+        setIsTyping(false);
+        clearInterval(intervalId);
+      }
+    }, 20); // 20ms per word chunk for smooth but fast streaming
+
+    return () => clearInterval(intervalId);
+  }, [message.content, shouldAnimate]);
 
   const handleCopy = async () => {
     try {
@@ -60,7 +109,7 @@ function MessageBubble({ message }: { message: Message }) {
             </p>
           )}
 
-          {!isUser && (
+          {!isUser && !isTyping && (
             <button
               onClick={handleCopy}
               className={cn(
@@ -108,7 +157,7 @@ function MessageBubble({ message }: { message: Message }) {
                 ),
               }}
             >
-              {message.content}
+              {displayedContent || ''}
             </ReactMarkdown>
           </div>
         )}
@@ -159,8 +208,12 @@ export function MessageList({ messages, loading }: MessageListProps) {
   return (
     <ScrollArea className="flex-1" ref={scrollRef}>
       <div className="divide-y divide-border/50">
-        {messages.map((message) => (
-          <MessageBubble key={message.id} message={message} />
+        {messages.map((message, index) => (
+          <MessageBubble
+            key={message.id}
+            message={message}
+            isLast={index === messages.length - 1}
+          />
         ))}
         {loading && <TypingIndicator />}
       </div>

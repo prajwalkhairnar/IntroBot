@@ -4,7 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { AnalyticsDashboard } from '@/components/admin/AnalyticsDashboard';
-import { supabase } from '@/lib/supabase';
+import { api } from '@/lib/api';
 import { toast } from 'sonner';
 
 import { Lock, ArrowLeft, Loader2, Shield, RefreshCcw, Moon, Sun } from 'lucide-react';
@@ -42,19 +42,7 @@ export default function Settings() {
         setError(null);
 
         try {
-            const { data, error } = await supabase
-                .from('admin_credentials')
-                .select('*')
-                .eq('username', email)
-                .single();
-
-            if (error || !data) {
-                throw new Error('Invalid credentials');
-            }
-
-            if (data.password !== password) {
-                throw new Error('Invalid credentials');
-            }
+            const data = await api.admin.login({ username: email, password });
 
             login(data.service);
             toast.success('Welcome to Mission Control');

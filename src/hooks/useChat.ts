@@ -23,24 +23,7 @@ export function useChat(conversationId: string | null, onConversationNamed?: (ti
     loadMessages();
   }, [conversationId]);
 
-  // Subscribe to real-time message updates
-  useEffect(() => {
-    if (!conversationId) return;
 
-    const unsubscribe = supabaseService.subscribeToMessages(
-      conversationId,
-      (newMessage) => {
-        // Only add messages that aren't already in our state
-        setMessages((prev) => {
-          const exists = prev.some((m) => m.id === newMessage.id);
-          if (exists) return prev;
-          return [...prev, newMessage];
-        });
-      }
-    );
-
-    return unsubscribe;
-  }, [conversationId]);
 
   const loadMessages = useCallback(async () => {
     if (!conversationId) return;

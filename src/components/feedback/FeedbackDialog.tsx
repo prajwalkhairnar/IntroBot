@@ -13,7 +13,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { toast } from '@/components/ui/sonner';
-import { supabase } from '@/lib/supabase';
+import { api } from '@/lib/api';
 
 interface FeedbackDialogProps {
     open: boolean;
@@ -39,14 +39,12 @@ export function FeedbackDialog({ open, onOpenChange, userId }: FeedbackDialogPro
         setIsSubmitting(true);
 
         try {
-            const { error } = await supabase.from('feedback').insert({
+            await api.feedback.submit({
                 rating,
-                comments: comments.trim() || null,
-                email: email.trim() || null,
-                user_id: userId || null,
+                comments: comments.trim() || undefined,
+                email: email.trim() || undefined,
+                userId: userId || undefined,
             });
-
-            if (error) throw error;
 
             toast.success('Thank you for your feedback!', {
                 description: 'We appreciate you taking the time to share your thoughts.',

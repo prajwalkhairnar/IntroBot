@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { supabase } from '@/lib/supabase';
+import { api } from '@/lib/api';
 import { Loader2, Copy, Check, Shield } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { toast } from '@/components/ui/sonner';
@@ -23,12 +23,7 @@ export function AdminCredentialsWall() {
 
     const fetchCredentials = async () => {
         try {
-            const { data, error } = await supabase
-                .from('admin_credentials')
-                .select('*')
-                .order('created_at', { ascending: false });
-
-            if (error) throw error;
+            const data = await api.admin.getCredentials();
             setCredentials(data || []);
         } catch (error) {
             console.error('Error fetching credentials:', error);

@@ -37,7 +37,7 @@ A modern, AI-powered chat application with a stunning animated interface, persis
 
 ## 🏗️ Architecture
 
-IntroBot uses a **hybrid architecture** that combines the best of both worlds:
+IntroBot uses a **centralized backend architecture** to ensure security and scalability:
 
 ```
 ┌─────────────────────────────────────────────────────┐
@@ -45,33 +45,34 @@ IntroBot uses a **hybrid architecture** that combines the best of both worlds:
 │  ┌────────────────────────────────────────────────┐ │
 │  │  • UI Components (shadcn/ui)                   │ │
 │  │  • State Management (React Hooks)              │ │
-│  │  • Real-time Subscriptions                     │ │
+│  │  • Optimistic UI Updates                       │ │
 │  └────────────────────────────────────────────────┘ │
 └─────────────────────────────────────────────────────┘
-         │                              │
-         │ Database Ops                 │ AI Requests
-         ↓                              ↓
-┌──────────────────┐          ┌──────────────────────┐
-│    Supabase      │          │  Backend Server      │
-│   (PostgreSQL)   │          │   (Node.js/Express)  │
-│                  │          │                      │
-│  • Conversations │          │  • AI Chat Endpoint  │
-│  • Messages      │          │  • Title Generation  │
-│  • Real-time     │          │  • Groq Integration  │
-└──────────────────┘          └──────────────────────┘
-                                       │
-                                       ↓
-                              ┌──────────────────┐
-                              │   Groq API       │
-                              │  (AI Inference)  │
-                              └──────────────────┘
+                        │
+                        │ REST API Requests
+                        ↓
+┌─────────────────────────────────────────────────────┐
+│                  Backend Server                      │
+│                (Node.js/Express)                     │
+│  ┌──────────────────────┐  ┌──────────────────────┐ │
+│  │   Database Controller │  │    AI Controller     │ │
+│  └──────────────────────┘  └──────────────────────┘ │
+└─────────────────────────────────────────────────────┘
+            │                           │
+   Database │                           │ AI Inference
+   Ops      │                           │
+            ↓                           ↓
+   ┌──────────────────┐        ┌──────────────────┐
+   │    Supabase      │        │     Groq API     │
+   │   (PostgreSQL)   │        │                  │
+   └──────────────────┘        └──────────────────┘
 ```
 
 **Why this architecture?**
-- ✅ **Security**: API keys never exposed to frontend
-- ✅ **Performance**: Direct database access for fast CRUD operations
-- ✅ **Real-time**: Supabase subscriptions for instant updates
-- ✅ **Scalability**: Backend can be scaled independently
+- ✅ **Security**: All database and AI interactions are proxied through the backend
+- ✅ **Consistency**: Centralized logic for data validation and formatting
+- ✅ **Scalability**: Backend handles connection pooling and rate limiting
+- ✅ **Simplicity**: Frontend only communicates with one API endpoint
 
 ## 🛠️ Tech Stack
 

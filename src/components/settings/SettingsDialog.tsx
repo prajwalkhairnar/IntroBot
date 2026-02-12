@@ -10,7 +10,7 @@ import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
 import { Lock, Loader2 } from 'lucide-react';
 import { AdminCredentialsWall } from '@/components/admin/AdminCredentialsWall';
-import { supabase } from '@/lib/supabase';
+import { api } from '@/lib/api';
 import { toast } from 'sonner';
 
 interface SettingsDialogProps {
@@ -34,20 +34,7 @@ export function SettingsDialog({ open, onOpenChange }: SettingsDialogProps) {
             // Check against admin_credentials table
             // In a real production app, this is insecure as it exposes credentials to the client
             // But per request for this wall feature:
-            const { data, error } = await supabase
-                .from('admin_credentials')
-                .select('*')
-                .eq('username', email) // Using email field as username
-                .single();
-
-            if (error || !data) {
-                throw new Error('Invalid credentials');
-            }
-
-            // Simple string comparison for password
-            if (data.password !== password) {
-                throw new Error('Invalid credentials');
-            }
+            await api.admin.login({ username: email, password });
 
             setIsAuthenticated(true);
             toast.success('Access granted');

@@ -18,16 +18,22 @@ export async function generateAIResponse(conversationHistory: Message[]): Promis
 }
 
 export async function generateConversationTitle(
-    firstUserMessage: string,
-    firstAIResponse: string
+    messages: Message[]
 ): Promise<string> {
+    // Sanitize messages to ensure we only send necessary data and avoid circular references
+    const sanitizedMessages = messages.map(m => ({
+        role: m.role,
+        content: m.content
+    }));
+
     const response = await fetch(`${BACKEND_URL}/api/ai/title`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ firstUserMessage, firstAIResponse }),
+        body: JSON.stringify({ messages: sanitizedMessages }),
     });
 
     if (!response.ok) {
+        const errorText = await response.text();
         throw new Error('Failed to generate title');
     }
 

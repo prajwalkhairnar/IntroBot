@@ -5,10 +5,10 @@ import { generateAIResponse, generateConversationTitle } from '@/services/backen
 
 interface UseChatProps {
   conversationId: string | null;
-  onConversationNamed?: (title: string) => void;
+  onConversationNamed?: (title: string, conversationId?: string) => void;
 }
 
-export function useChat(conversationId: string | null, onConversationNamed?: (title: string) => void) {
+export function useChat(conversationId: string | null, onConversationNamed?: (title: string, conversationId?: string) => void) {
   const [messages, setMessages] = useState<Message[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -76,13 +76,18 @@ export function useChat(conversationId: string | null, onConversationNamed?: (ti
         // Add assistant message to local state
         setMessages((prev) => [...prev, assistantMessage]);
 
-        // Auto-generate conversation title after second user message
+        // Auto-generate conversation title at specific checkpoints: 1st, 3rd, 9th, 18th, 27th...
         const userMessageCount = conversationHistory.filter(m => m.role === 'user').length;
-        if (userMessageCount === 1 && onConversationNamed) {
-          // This is the first exchange, generate a title
-          generateConversationTitle(userMessage.content, aiContent)
+        const shouldUpdateTitle = userMessageCount === 1 || userMessageCount === 3 || (userMessageCount > 3 && userMessageCount % 9 === 0);
+
+        if (shouldUpdateTitle && onConversationNamed) {
+          // Use the last 5 messages including the new assistant message for context
+          const currentHistory = [...conversationHistory, assistantMessage];
+          const recentMessages = currentHistory.slice(-5);
+
+          generateConversationTitle(recentMessages)
             .then(title => {
-              onConversationNamed(title);
+              onConversationNamed(title, convId);
             })
             .catch(err => {
               console.error('Failed to generate conversation title:', err);

@@ -35,9 +35,12 @@ const Index = () => {
     }
   }, [activeConversationId, updateConversationPreview]);
 
-  const handleConversationNamed = useCallback((title: string) => {
-    if (activeConversationId) {
-      updateConversationTitle(activeConversationId, title);
+  const handleConversationNamed = useCallback((title: string, conversationId?: string) => {
+    // If we have an explicit conversation ID (from the initial creation), use it.
+    // Otherwise fallback to activeConversationId
+    const targetId = conversationId || activeConversationId;
+    if (targetId) {
+      updateConversationTitle(targetId, title);
     }
   }, [activeConversationId, updateConversationTitle]);
 

@@ -24,13 +24,13 @@ router.post('/chat', async (req, res) => {
 // POST /api/ai/title
 router.post('/title', async (req, res) => {
     try {
-        const { firstUserMessage, firstAIResponse } = req.body;
+        const { messages } = req.body;
 
-        if (!firstUserMessage || !firstAIResponse) {
-            return res.status(400).json({ error: 'Missing required fields' });
+        if (!messages || !Array.isArray(messages) || messages.length === 0) {
+            return res.status(400).json({ error: 'Missing or invalid messages' });
         }
 
-        const title = await generateConversationTitle(firstUserMessage, firstAIResponse);
+        const title = await generateConversationTitle(messages);
         res.json({ title });
     } catch (error) {
         console.error('Error in /title:', error);

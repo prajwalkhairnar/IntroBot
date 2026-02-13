@@ -120,18 +120,20 @@ export async function generateAIResponse(conversationHistory: Message[]): Promis
 }
 
 export async function generateConversationTitle(
-    firstUserMessage: string,
-    firstAIResponse: string
+    messages: Message[]
 ): Promise<string> {
     if (!getGroqApiKey()) {
         return 'New Conversation';
     }
     try {
-        const prompt = `Based on this conversation, generate a short title (3-5 words maximum).
+        const conversationText = messages.map(m => `${m.role === 'user' ? 'User' : 'Assistant'}: ${m.content}`).join('\n');
+
+        const prompt = `Based on this conversation snippet, generate a short, relevant title (3-5 words maximum).
+The title should reflect the main topic being discussed in the recent messages.
 Only respond with the title, nothing else.
 
-User: ${firstUserMessage}
-Assistant: ${firstAIResponse}
+Conversation:
+${conversationText}
 
 Title:`;
         const response = await getNamingModel().invoke([new HumanMessage(prompt)]);

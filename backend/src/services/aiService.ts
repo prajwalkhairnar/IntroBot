@@ -128,12 +128,19 @@ export async function generateConversationTitle(
     try {
         const conversationText = messages.map(m => `${m.role === 'user' ? 'User' : 'Assistant'}: ${m.content}`).join('\n');
 
-        const prompt = `Based on this conversation snippet, generate a short, relevant title (3-5 words maximum).
-The title should reflect the main topic being discussed in the recent messages.
-Only respond with the title, nothing else.
+        const prompt = `<instructions>
+    <goal>Generate a concise, professional title for this chat conversation.</goal>
+    <constraints>
+        <length>2-4 words</length>
+        <style>Professional, direct, no filler words</style>
+        <forbidden_words>Chat, Question, Conversation, Inquiry, Help</forbidden_words>
+        <formatting>No quotes, no prefixes, just the title text</formatting>
+    </constraints>
+</instructions>
 
-Conversation:
+<conversation>
 ${conversationText}
+</conversation>
 
 Title:`;
         const response = await getNamingModel().invoke([new HumanMessage(prompt)]);

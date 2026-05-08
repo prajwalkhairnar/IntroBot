@@ -161,7 +161,7 @@ IntroBot uses a **centralized backend architecture** to ensure security and scal
    GROQ_NAMING_MAX_TOKENS=50         # Max tokens for conversation titles
    ```
    
-   > 📖 **For detailed configuration guide**, see [ENV_CONFIGURATION.md](./ENV_CONFIGURATION.md)
+   > 📖 **For detailed configuration guide**, see [docs/ENV_CONFIGURATION.md](./docs/ENV_CONFIGURATION.md)
 
 5. **Set up Supabase database**
    - Go to your Supabase dashboard → SQL Editor
@@ -186,7 +186,7 @@ IntroBot uses a **centralized backend architecture** to ensure security and scal
    - Backend runs on `http://localhost:3001`
    - Start chatting! 🎉
 
-For detailed setup instructions, see [SETUP.md](./SETUP.md).
+For detailed setup instructions, see [docs/SETUP.md](./docs/SETUP.md).
 
 ## 🎯 Usage
 
@@ -340,6 +340,9 @@ NAME=YourName
 ```
 
 #### 2. Update Your Professional Context
+
+> **Important for forks**: `backend/src/context/professional_context.md` contains the author's own professional background. Replace it entirely with your own information before deploying.
+
 Edit `backend/src/context/professional_context.md` with your information. This file uses an XML-like structure for easy editing:
 
 ```xml
@@ -420,7 +423,7 @@ All configuration is managed through environment variables in two files:
 - **Root `.env`**: Frontend settings (personal info, social links, UI text)
 - **`backend/.env`**: Backend settings (AI parameters, API keys, server config)
 
-**📖 Complete Configuration Guide**: See [ENV_CONFIGURATION.md](./ENV_CONFIGURATION.md) for detailed documentation of all variables.
+**📖 Complete Configuration Guide**: See [docs/ENV_CONFIGURATION.md](./docs/ENV_CONFIGURATION.md) for detailed documentation of all variables.
 
 ### 🤖 AI Behavior Configuration
 
@@ -558,12 +561,12 @@ For questions or feedback, please open an issue on GitHub.
 
 ## 📚 Documentation
 
-- **[ENV_CONFIGURATION.md](./ENV_CONFIGURATION.md)** - Complete environment variables guide
-- **[ENV_MIGRATION_SUMMARY.md](./ENV_MIGRATION_SUMMARY.md)** - Environment variables migration details
-- **[SETUP.md](./SETUP.md)** - Detailed setup instructions
-- **[BACKEND_MIGRATION_GUIDE.md](./BACKEND_MIGRATION_GUIDE.md)** - Backend architecture guide
-- **[FEEDBACK_SETUP.md](./FEEDBACK_SETUP.md)** - User feedback system setup
-- **[INTEREST_REGISTRATION_SETUP.md](./INTEREST_REGISTRATION_SETUP.md)** - Interest registration setup
+- **[docs/SETUP.md](./docs/SETUP.md)** - Detailed setup instructions
+- **[docs/ENV_CONFIGURATION.md](./docs/ENV_CONFIGURATION.md)** - Complete environment variables guide
+- **[docs/BACKEND_MIGRATION_GUIDE.md](./docs/BACKEND_MIGRATION_GUIDE.md)** - Backend architecture guide
+- **[docs/SUPABASE_SETUP.md](./docs/SUPABASE_SETUP.md)** - Supabase project setup and RLS policy guide
+- **[docs/FEEDBACK_SETUP.md](./docs/FEEDBACK_SETUP.md)** - User feedback system setup
+- **[docs/INTEREST_REGISTRATION_SETUP.md](./docs/INTEREST_REGISTRATION_SETUP.md)** - Interest registration setup
 
 ---
 

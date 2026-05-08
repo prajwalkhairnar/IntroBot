@@ -1,10 +1,14 @@
 # 🌟 IntroBot
 
+**Live Demo: [introbot.atclawme.com](https://introbot.atclawme.com/)**
+
 Your digital professional twin — an AI-powered chatbot that introduces you, answers questions about your background, and holds professional introductory conversations on your behalf.
 
 Deploy it on your portfolio or personal site so anyone can learn about you in a natural, conversational way: your roles, skills, projects, and experience — without you being in the room.
 
 Built with React, TypeScript, and powered by Groq + LangChain.
+
+![IntroBot App](public/app_demo.png)
 
 ![IntroBot](https://img.shields.io/badge/status-active-success.svg)
 ![TypeScript](https://img.shields.io/badge/TypeScript-5.8-blue.svg)

@@ -567,10 +567,7 @@ For questions or feedback, please open an issue on GitHub.
 
 - **[docs/SETUP.md](./docs/SETUP.md)** - Detailed setup instructions
 - **[docs/ENV_CONFIGURATION.md](./docs/ENV_CONFIGURATION.md)** - Complete environment variables guide
-- **[docs/BACKEND_MIGRATION_GUIDE.md](./docs/BACKEND_MIGRATION_GUIDE.md)** - Backend architecture guide
 - **[docs/SUPABASE_SETUP.md](./docs/SUPABASE_SETUP.md)** - Supabase project setup and RLS policy guide
-- **[docs/FEEDBACK_SETUP.md](./docs/FEEDBACK_SETUP.md)** - User feedback system setup
-- **[docs/INTEREST_REGISTRATION_SETUP.md](./docs/INTEREST_REGISTRATION_SETUP.md)** - Interest registration setup
 
 ---
 
